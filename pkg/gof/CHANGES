@@ -1,0 +1,61 @@
+Changes to Version 0.7-0 (1/10-2010)
+	- Fixed bug introduced by new model.matrix implementation for 'coxph' objects
+	- Initial support added for structural equation models (lava)
+
+Changes to Version 0.6-4 (8/4-2009)
+	- Fixed bug in cumres.coxph appearing for models with only one
+          predictor (stupid [...,drop=FALSE] missing)
+	- CITATION added
+
+Changes to Version 0.6-3 (26/2-2009)
+	- Windows compilation fix
+	- onload function added
+
+Changes to Version 0.6-2 (13/1-2009)
+	- Code cleanup
+
+Changes to Version 0.6-1 (15/12-2008) 
+	- bug appearing with occurences of ties in x-variable 
+	  (ordering variable). Appeared because usage of 'order'-function
+	  from the scythestat-library which gives a ranking (e.g. 4 1 1 1 5
+	  compared to 4 1 2 3 5).
+
+Changes to Version 0.6-0 (09/12-2008)
+	- Nicer cumres function (Wi)
+
+Changes to Version 0.5-7 (01/12-2008)
+	- Compiles with '-pedantic' (scythestat library)
+
+Changes to Version 0.5-6 (18/11-2008)
+	- g++ 4.3 compatibility (scythestat library)
+
+Changes to Version 0.5-5 (18/11-2008)
+	- Moving average of residuals implemented
+
+Changes to Version 0.5-4 (17/11-2008)
+	- Minor revision of code (no changes for end-user)
+	- Major bug corrected. For a glm dginv(yhat) was used 
+	  instead of dginv(Xb).
+
+Changes to Version 0.5-3 (11/11-2008)
+	- Bug fixes in particularily in the cumres method for the coxph-class.
+	- Documentation
+
+Changes to Version 0.5-0
+	- Cumres changed to S3 method
+	- Added support for the Cox model
+	- Large revision of C++ code
+	
+Changes to Version 0.4-0
+	- Implementation of simultaneous prediction bands
+	- Documentation
+
+Changes to Version 0.3-0
+	- Bug-fixes
+
+Changes to Version 0.2-0
+	- Transition to C++ code for faster computation of resamples
+
+Changes to Version 0.1-0
+	- Implementation of linear, logistic and poisson regression
+
