@@ -144,7 +144,7 @@ extern "C" {
 //    return(0);
     
     Matrix<double> sdW = apply(W,1,ss2);
-
+    
     double KSobs = KolmogorovSmirnov(Wobs);
     double CvMobs = CramerVonMises(Wobs,xo); //xo
 
@@ -159,6 +159,7 @@ extern "C" {
     Matrix<double> Res(min((double)*plotnum,(double)*R),*n);
     for (unsigned i=0; i< *R; i++) {
       for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);
+      
       Matrix<double> What = W*(N);
       //      cerr << "What=" << What << endl << endl << endl;
       cvalues[i] = max(fabs(What/sdW));

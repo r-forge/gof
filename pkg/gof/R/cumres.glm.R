@@ -5,10 +5,10 @@ function(model,...) UseMethod("cumres")
   cumres.glm(model,...)
 }
 
-`cumres.glm` <- cc <- 
+`cumres.glm` <- 
 function(model,
          variable=c("predicted",colnames(model.matrix(model))),
-         data=data.frame(model.matrix(model)),
+         data=data.frame(model.matrix(model)),                       
          R=500, b=0, plots=min(R,50),breakties=1e-12,
          seed=round(runif(1,1,1e9)),...) {
   dginv <- function(z) 1
