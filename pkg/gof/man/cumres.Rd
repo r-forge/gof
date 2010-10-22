@@ -1,11 +1,18 @@
 \name{cumres}
 \alias{cumres}
-\alias{cumres.lm}
 \alias{cumres.glm}
-\title{Calculates GOF measures for for generalized linear models}
+\alias{cumres.lm}
+\title{Calculates GOF statistics based on cumulative residual processes}
 \description{
-  Currently linear regression models (lm) and logistic and poisson
-  regression models are supported.  
+  Given the generalized linear models model
+  \deqn{g(E(Y_i|X_{i1},...,X_{ik})) = \sum_{i=1}^k \beta_jX_{ij}}
+  the \code{cumres}-function calculates the 
+  the observed cumulative sum of residual process, cumulating the residuals,
+  \eqn{e_i}, by the jth covariate:
+  \deqn{W_j(t) = n^{-1/2}\sum_{i=1}^n 1_{\{X_{ij}<t\}}e_i}
+  and Kolmogorov-Smirnov and Cramer-von-Mises test statistics are
+  calculated via simulation from the asymptotic distribution of the
+  cumulative residual process under the null (Lin et al., 2002).
 }
 \usage{
 \method{cumres}{lm} (model, ...)
@@ -33,9 +40,20 @@
   Returns an object of class 'cumres'.
 }
 \author{Klaus K. Holst}
-
+\note{
+  Currently linear (normal), logistic and poisson
+  regression models with canonical links are supported.  
+}
 \seealso{\code{\link[timereg]{cox.aalen}} in the \code{timereg}-package
   for similar GOF-methods for survival-data.}
+\references{
+D.Y. Lin and L.J. Wei and Z. Ying (2002) \emph{Model-Checking Techniques
+  Based on Cumulative Residuals}. Biometrics, Volume 58, pp 1-12.
+
+John Q. Su and L.J. Wei (1991) \emph{A lack-of-fit test for the mean function
+  in a generalized linear model}. Journal. Amer. Statist. Assoc.,
+Volume 86, Number 414, pp 420-426.
+}
 \examples{
 sim1 <- function(n=100, f=function(x1,x2) {10+x1+x2^2}, sd=1, seed=1) {
   if (!is.null(seed))

@@ -4,8 +4,8 @@
   censored survival times
 }
 \description{
-  Currently only implemented for score processes  which serves as tests
-  for proportionaly of hazards.
+  Calculates score processes and KS and Cvm tests for proportionaly of
+  hazards via simulation (Martinussen and Scheike, 2006).
 }
 \usage{
 \method{cumres}{coxph} (model,
@@ -64,7 +64,7 @@ summary(a)
 
 ## PBC example
 data(pbc)
-fit.cox <- coxph(Surv(time,status) ~ age + edema + bili + protime, data=pbc)
+fit.cox <- coxph(Surv(time,status==2) ~ age + edema + bili + protime, data=pbc)
 system.time(pbc.gof <- cumres(fit.cox,R=2000))
 \dontrun{
 par(mfrow=c(2,2))

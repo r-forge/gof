@@ -11,13 +11,12 @@
 
 cumres.lvmfit <-
   function(model,y,x,cond,
-           data=model.frame(model),p=pars(model),
+           data=model.frame(model),p,
            R=100, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
            debug=FALSE, ...) {
     if (!require("lava")) stop("package 'lava' not available")
     if (!require("numDeriv")) stop("package 'numDeriv' not available")
     
-    Debug(list("p=",p),debug)
     
     hatW.MC <- function(x) {
       ord <- order(x)
@@ -42,17 +41,6 @@ cumres.lvmfit <-
       return(list(output=output,x=x[ord]))
     }
 
-
-    if (FALSE) {
-      model <- e
-      p <- coef(e)
-      data <- model.frame(e)      
-      R <- 100
-      b <- 0
-      n <- length(x0)
-      plots <- 100
-      seed <- 1
-    }
     x0 <- x
     n <- length(x0)
 ##    y <- u2~z1+z2+z3+y1+y2+y3
@@ -68,12 +56,15 @@ cumres.lvmfit <-
     
 ##    x0 <- attributes(predict(e))$epsilon.y[,"u1"]
 ##    x0 <- attributes(predict(e))$epsilon.y[,"u1"]
+    if (missing(p))
+      p <- lava::pars(model)
+
     myres <- function(p) {
       attributes(predict(model,p=p))$epsilon.y[,y]
 ##      predict(model,x=endogenous(model),resid=TRUE,p=p)[,"u2"]
 ##      predict(model,x=~z1+z2+z3+y1+y2+y3,resid=FALSE,p=p)[,"u2"]
     }
-    grad <- -jacobian(myres,p,method=lava.options()$Dmethod)
+    grad <- -jacobian(myres,p,method=lava::lava.options()$Dmethod)
     r <- myres(p)
     ##    Ii <- solve(information(model,p), num=TRUE)
     Ii <- model$vcov
@@ -86,7 +77,7 @@ cumres.lvmfit <-
     r <- r[ord]
     Ii <- model$vcov
 ##    Debug(list("Ii=",Ii),debug)
-    Score <- score(model,data=data,p=p,indiv=TRUE)[ord,]
+    Score <- lava::score(model,data=data,p=p,indiv=TRUE,weight=lava::Weight(model))[ord,]
     beta.iid <- Ii%*%t(Score)
 
     onesim <- hatW.MC(x0)

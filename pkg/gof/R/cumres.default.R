@@ -1,10 +1,22 @@
 `cumres.default` <-
   function(model,score,information,
-           residual,variable,
-           data=model.frame(model),p=pars(model),
+           residualfun,variable,
+           data=model.frame(model),par=coef(model),
            R=500, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
            debug=FALSE, ...) {
 
+    ord <- order(variable)
+    x <- variable
+    n <- length(x)
+    r <- residualfun(model)[ord]
+    grad <- attributes(r)$grad    
+    if (is.null(grad)) {
+      if (!require("numDeriv")) stop("Supply gradient")
+      grad <- jacobian(residualfun,par,...)[ord,]
+    }
+    score <- score[ord,]
+    Ii <-  solve(information)
+    beta.iid <- Ii%*%t(score)        
         
     hatW.MC <- function(x) {
       ord <- order(x)
@@ -28,6 +40,25 @@
                    , PACKAGE="gof")
       return(list(output=output,x=x[ord]))
     }
+        
+    onesim <- hatW.MC(x)
+    What <- matrix(onesim$output$Ws,nrow=n);
+    ##    W <- cumsum(r[order(x0)]) 
+    ##    matplot(x0,What,type="s", col="red", lty=1,pch=-1)
+    ##    lines(onesim$output$Wobs ~ x0,type="s",lwd=2)
 
-
+##    browser()
+    
+    res <- with(onesim$output,
+                list(W=cbind(Wobs), What=list(What),
+                     x=cbind(x0),
+                     KS=KS, CvM=CvM,
+                     R=R, n=n, sd=cbind(Wsd), 
+                     cvalues=cbind(cvalues), variable="x",
+                     type="sem",
+                     model=class(model)[1]) ##, onesim$output$WW)
+                )
+    class(res) <- "cumres"
+    
+    return(res)    
   }
