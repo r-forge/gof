@@ -35,7 +35,7 @@ ylim=NULL,
   \item{...}{Additional arguments passed to the plot-routine.}
 }
 \seealso{
-  \code{\link[cumres]{cumres}}
+  \code{\link[gof]{cumres}}
 }
 \examples{
 n <- 500; x <- abs(rnorm(n,sd=0.2))+0.01; y <- sqrt(x) + rnorm(n,sd=0.2)
