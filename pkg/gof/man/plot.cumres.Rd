@@ -28,9 +28,9 @@ ylim=NULL,
   \item{level}{The required prediction level.}
   \item{legend}{Type of legend where "type1" gives p-values of GOF-tests
     and "type2" gives usual type of legends.}
-  \item{xlab}{}
-  \item{ylab}{}
-  \item{vs}{}
+  \item{xlab}{Optional label of x-axis}
+  \item{ylab}{Optional label of y-axis}
+  \item{vs}{Label of predictor}
   \item{ylim}{Range of y axis.}
   \item{...}{Additional arguments passed to the plot-routine.}
 }

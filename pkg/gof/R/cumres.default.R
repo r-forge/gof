@@ -12,7 +12,7 @@
     grad <- attributes(r)$grad    
     if (is.null(grad)) {
       if (!require("numDeriv")) stop("Supply gradient")
-      grad <- jacobian(residualfun,par,...)[ord,]
+      grad <- numDeriv::jacobian(residualfun,par,...)[ord,]
     }
     score <- score[ord,]
     Ii <-  solve(information)

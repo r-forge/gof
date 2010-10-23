@@ -43,50 +43,27 @@ cumres.lvmfit <-
 
     x0 <- x
     n <- length(x0)
-##    y <- u2~z1+z2+z3+y1+y2+y3
-##    x <- ~u1
-##    y <- "y2"
-##    y0 <- predict(model,y=y,resid=FALSE)
-    ##    y0 <- predict(model,y=y,resid=FALSE)
-##    x0 <- predict(model,y=x,resid=FALSE)
-##    x0 <- attributes(predict(model))$eta.x["u1",]
-##    x0 <- predict(e,x=~y1+y2+y3,resid=TRUE)[,"u1"]
-##    x0 <- predict(model,x=~y1+y3+y4+y5,resid=FALSE)[,"u1"]
-##    x0 <- attributes(predict(model))$blup[,"u1"]
-    
-##    x0 <- attributes(predict(e))$epsilon.y[,"u1"]
-##    x0 <- attributes(predict(e))$epsilon.y[,"u1"]
     if (missing(p))
       p <- lava::pars(model)
 
     myres <- function(p) {
       attributes(predict(model,p=p))$epsilon.y[,y]
-##      predict(model,x=endogenous(model),resid=TRUE,p=p)[,"u2"]
-##      predict(model,x=~z1+z2+z3+y1+y2+y3,resid=FALSE,p=p)[,"u2"]
     }
-    grad <- -jacobian(myres,p,method=lava::lava.options()$Dmethod)
+    grad <- -numDeriv::jacobian(myres,p,method=lava::lava.options()$Dmethod)
     r <- myres(p)
     ##    Ii <- solve(information(model,p), num=TRUE)
     Ii <- model$vcov
-##    Debug(list("Ii=",Ii),debug)
-##    Score <- score(model,data=data,p=p,indiv=TRUE)
-##    beta.iid <- Ii%*%t(Score)    
     ord <- order(x0)
+
     x0 <- x0[ord]
     grad <- grad[ord,]
     r <- r[ord]
     Ii <- model$vcov
-##    Debug(list("Ii=",Ii),debug)
     Score <- lava::score(model,data=data,p=p,indiv=TRUE,weight=lava::Weight(model))[ord,]
     beta.iid <- Ii%*%t(Score)
 
     onesim <- hatW.MC(x0)
     What <- matrix(onesim$output$Ws,nrow=n);
-    ##    W <- cumsum(r[order(x0)]) 
-    ##    matplot(x0,What,type="s", col="red", lty=1,pch=-1)
-    ##    lines(onesim$output$Wobs ~ x0,type="s",lwd=2)
-
-##    browser()
     
     res <- with(onesim$output,
                 list(W=cbind(Wobs), What=list(What),
@@ -95,7 +72,7 @@ cumres.lvmfit <-
                      R=R, n=n, sd=cbind(Wsd), 
                      cvalues=cbind(cvalues), variable="x",
                      type="sem",
-                     model=class(model)[1]) ##, onesim$output$WW)
+                     model=class(model)[1])
                 )
     class(res) <- "cumres"
     
