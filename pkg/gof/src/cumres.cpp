@@ -21,6 +21,7 @@
 #include "cumres.h"
 
 
+extern const double SDtol = 1e-9;
 //*************************************************
 
 
@@ -229,6 +230,9 @@ extern "C" {
     Matrix<double> vW = (cumsum(r%r)+W)/(*n);
     Matrix<double> sdW = sqrt(cumsum(r%r)+W)/sqrt(*n);
     sdW[*n-1] = 1.0;
+    for (unsigned j=0; j<(*n); j++) { // Avoid division by zero (cvalues)
+      if (sdW[j]<SDtol) sdW[j] = SDtol;
+    }
 
     Matrix<double> Res(min((double)*plotnum,(double)*R),*n);
     for (unsigned i=0; i< *R; i++) {
@@ -241,7 +245,7 @@ extern "C" {
       What -= KK;
       cvalues[i] = max(fabs(What/sdW));
       double KShat = KolmogorovSmirnov(What);
-      double CvMhat = CramerVonMises(What,x); //xo
+      double CvMhat = CramerVonMises(What,x);
       if (KShat>KSobs) KScount++;
       if (CvMhat>CvMobs) CvMcount++;
       if ((unsigned)i< *plotnum) {

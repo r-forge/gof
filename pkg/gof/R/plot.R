@@ -7,6 +7,7 @@ plot.cumres <- function(x, idx=1:length(x$variable),
                         ylim=NULL, ...) {
   ylim. <- ylim
   newylab <- missing(ylab)
+  newxlab <- missing(xlab)
   for (i in idx) {
     legendtxt <- c(); legendpch <- c(); legendcol <- c(); legendlty <- c(); legendlwd <- c(); legendcex <- c()
     if (is.null(ylim)) {
@@ -14,7 +15,7 @@ plot.cumres <- function(x, idx=1:length(x$variable),
     }
     ## Observed process
     main <- ""
-    if (missing(xlab)) {
+    if (newxlab) {
       xlab <- x$variable[i]; 
       if (x$type[i]=="score") {
         main <- xlab; xlab <- "Time";

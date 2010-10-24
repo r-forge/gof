@@ -1,4 +1,4 @@
-confint.cumres <- function(object, parm=1, level=0.95, cval=NULL, ...) {
+confint.cumres <- function(object, parm=1:length(object$variable), level=0.95, cval=NULL, ...) {
   t <- c(); yu <- c()
   for (idx in parm) {
     if (is.null(cval))
