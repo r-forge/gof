@@ -106,7 +106,7 @@ extern "C" {
     Matrix<double> XRR(*n,*p);
     unsigned p2 = (*p)*(*p);
     Matrix<double> XRRX(*n,p2);
-    for (unsigned i=0; i<*n; i++) { 
+    for (int i=0; i<*n; i++) { 
       XRR(i,_) = RR[i]*X(i,_); 
       // Matrix<double> newr = RR[i]*crossprod(X(i,_)); newr.resize(1,p2);
       XRRX(i,_) = RR[i]*crossprod(X(i,_));
@@ -122,7 +122,7 @@ extern "C" {
     //    cerr << "..." << endl;
     Matrix<double> intS1oS02time = Cpred(cbind(dtimes,intS1oS02),time);
     Matrix<double> E_2(*nd,p2,false);
-    for (unsigned i=0; i<*nd; i++) { 
+    for (int i=0; i<*nd; i++) { 
       E_2(i,_) = crossprod(E(i,_)); // E(t,beta)^{\otimes 2} p. 184
     }
     Matrix<double> It = multCol(S_2, 1/S_0); 
@@ -146,7 +146,7 @@ extern "C" {
     unsigned CvMcount=0;
     Matrix<double> Res(min((double)*plotnum,(double)*R),*nd);
     mersenne myrng; myrng.initialize((unsigned long) *seed);
-    for (unsigned i=0; i<*R; i++) {
+    for (int i=0; i<*R; i++) {
       Matrix<double> G(1,*n,false);
       for (unsigned j=0; j<G.size(); j++) G[j]=myrng.rnorm(0, 1);
       Matrix<double> ScoreSim = G*WW; 
@@ -167,10 +167,10 @@ extern "C" {
       }
     }
 
-    for (unsigned i=0; i< *nd; i++) { 
+    for (int i=0; i< *nd; i++) { 
       Wsd[i] = sdW[i];
     }    
-    for (unsigned r=0; r< *nd; r++) 
+    for (int r=0; r< *nd; r++) 
       W[r] = Score[r];
     
 
