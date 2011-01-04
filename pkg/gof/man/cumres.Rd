@@ -68,7 +68,7 @@ sim1 <- function(n=100, f=function(x1,x2) {10+x1+x2^2}, sd=1, seed=1) {
 d <- sim1(100); l <- lm(y ~ x1 + x2,d)
 system.time(g <- cumres(l, R=100, plots=50))
 g
-\dontrun{plot(g)}
+\donttest{plot(g)}
 g1 <- cumres(l, c("y"), R=100, plots=50)
 g1
 g2 <- cumres(l, c("y"), R=100, plots=50, b=0.5)

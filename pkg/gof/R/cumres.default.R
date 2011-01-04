@@ -5,6 +5,7 @@
            R=500, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
            debug=FALSE, ...) {
 
+    if(any(is.na(par))) stop("Over-parametrized model")
     ord <- order(variable)
     x <- variable
     n <- length(x)

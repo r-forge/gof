@@ -29,6 +29,7 @@
   ##  Mres <- Mt <- residuals(model, type="martingale")[ot]
   ##  cox.schoen <- residuals(model,type="schoen")[,ot]
   beta <- coef(model)
+  if(any(is.na(beta))) stop("Over-parametrized model")
 
   ##  if (!is.na(match(response, variable))) variable[match(response, variable)] <- "predicted"
   if (is.numeric(variable))

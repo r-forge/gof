@@ -40,7 +40,9 @@ function(model,...) UseMethod("cumres")
   r <- residuals(model, type="response") ## g^{-1}(Xb)
   yhat <- predict(model, type="response") ## y-g^{-1}(Xb)
 ##  Xbeta <- predict(model, type="link") ## X*b
-  Xbeta <- X%*%coef(model)
+  beta <- coef(model)
+  if(any(is.na(beta))) stop("Over-parametrized model")
+  Xbeta <- X%*%beta
 
   etaraw <- (as.numeric(dginv(Xbeta))*X)
   
