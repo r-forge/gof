@@ -10,8 +10,8 @@
 \tabular{ll}{
 Package: \tab gof\cr
 Type: \tab Package\cr
-Version: \tab 0.7-3\cr
-Date: \tab 2010-01-04\cr
+Version: \tab 0.7-4\cr
+Date: \tab 2011-01-12\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }
@@ -29,7 +29,7 @@ Volume 86, Number 414, pp 420-426.
 }
 \keyword{ package }
 \seealso{\code{\link[timereg]{cox.aalen}} in the \code{timereg}-package
-  for similar GOF-methods for survival-data.}
+  for similar GoF-methods for survival-data.}
 \examples{
 example(cumres)
 

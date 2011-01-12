@@ -1,0 +1,146 @@
+cumres.lvmfit <- function(model,y,x,
+                           data=model.frame(model),p,
+                           R=100, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
+                            ...) {
+  if (!require("numDeriv")) stop("package 'numDeriv' not available")    
+  if (!require("lava")) stop("package 'lava' not available")    
+
+  cl <- match.call()
+  
+  if (class(y)[1]=="formula") {
+    y <- getoutcome(y)
+    x <- attributes(y)$x
+    y <- decomp.specials(y)
+  }
+
+  cl$y <- y; cl$x <- x
+  cl[[1]] <- as.name("cumres")
+  if ((is.character(y) | is.list(y)) & length(y)>1) {
+    res <- c()
+    iy <- 0;
+    for (i in y) {
+      iy <- iy+1
+      cl$y <- i
+      yname <- ifelse(is.character(i),i,"y"%+%iy)
+      if (is.character(x) | is.list(x)) {
+        ix <- 0
+        for (j in x) {
+          ix <- ix+1
+          cl$x <- j
+          xname <- ifelse(is.character(j),j,"x"%+%ix)          
+          newres <- list(eval.parent(cl))
+          names(newres) <- paste(yname,xname,sep="<-")
+          res <- c(res,newres)
+        }
+      } else {
+        xname <- ifelse(is.character(j),j,"x1")          
+        newres <- list(eval.parent(cl))
+        names(newres) <- paste(yname,xname,sep="<-")
+        res <- c(res,newres)
+      }
+    }
+    return(res)
+  }
+  
+  if ((is.character(x) | is.list(x)) & length(x)>1) {
+    res <- c()
+    ix <- 0
+    yname <- ifelse(is.character(y),y,"y1")
+    for (j in x) {
+      ix <- ix+1
+      cl$x <- j
+      xname <- ifelse(is.character(j),j,"x"%+%ix)          
+      newres <- list(eval.parent(cl))
+      names(newres) <- paste(yname,xname,sep="<-")
+      res <- c(res,newres)
+    }
+    return(res)
+  }
+
+
+  if (missing(p))
+    p <- pars(model)
+  x0 <- x
+  if (is.function(x))
+    x0 <- x(p)
+  if (is.character(x)) {
+    if (x %in% latent(model)) {
+      x0 <- attributes(predict(model))[["eta.x"]][x,]
+    } else {
+      x0 <- data[,x]
+    }
+  }
+  n <- length(x0)
+
+  
+  hatW.MC <- function(x) {
+    ord <- order(x)
+    output <- .C("W",
+                 R=as.integer(R), ## Number of realizations
+                 b=as.double(b), ## Moving average parameter
+                 n=as.integer(n), ## Number of observations
+                 npar=as.integer(nrow(Ii)), ## Number of parameters (columns in design)
+                 xdata=as.double(x), ## Observations to cummulate after 
+                 rdata=as.double(r), ## Residuals (one-dimensional)
+                 betaiiddata=as.double(beta.iid), ## Score-process
+                 etarawdata=as.double(grad), ## Eta (derivative of terms in cummulated process W)
+                 plotnum=as.integer(plots), ## Number of realizations to save (for later plot)
+                 seed=as.integer(seed), ## Seed (will probably rely on R's randgen in future version)
+                 KS=as.double(0), ## Return: Kolmogorov Smirnov statistics for each realization
+                 CvM=as.double(0), ## Return: Cramer von Mises statistics for each realization
+                 Wsd=as.double(numeric(n)), ## Return: Pointwise variance of W(x)
+                 cvalues=as.double(numeric(R)), ## Return: value for each realization s.t.  +/- cvalue * Wsd contains W*
+                 Ws=as.double(numeric(plots*n)), ## Return: Saved realizations (for plotting function)
+                 Wobs=as.double(numeric(n)) ## Observed process
+                 , PACKAGE="gof")
+    return(list(output=output,x=x[ord]))
+  }
+  
+  
+  if (is.function(y)) {
+    r <- y(p)
+    grad <- attributes(r)$grad
+    if (is.null(grad))
+      grad <- -numDeriv::jacobian(y,p,method=lava.options()$Dmethod)
+  } else {
+    myres <- function(p) {
+      attributes(predict(model,p=p))$epsilon.y[,y]
+    }
+    r <- myres(p)
+    grad <- -numDeriv::jacobian(myres,p,method=lava.options()$Dmethod)
+  }     
+  ##    Ii <- solve(information(model,p), num=TRUE)
+  Ii <- model$vcov
+  ord <- order(x0)
+  
+  x0 <- x0[ord]
+  grad <- grad[ord,]
+  r <- r[ord]
+  Ii <- model$vcov
+  Score <- score(model,data=data,p=p,indiv=TRUE,weight=Weight(model))[ord,]
+  beta.iid <- Ii%*%t(Score)
+  beta.iid[is.na(beta.iid)] <- 0
+
+  onesim <- hatW.MC(x0)
+  What <- matrix(onesim$output$Ws,nrow=n);
+
+  if (!is.character(y))  y <- NULL
+  res <- with(onesim$output,
+              list(W=cbind(Wobs), What=list(What),
+                   x=cbind(x0),
+                   KS=KS, CvM=CvM,
+                   R=R, n=n, sd=cbind(Wsd), 
+                   cvalues=cbind(cvalues), variable=ifelse(is.character(x),x,"x"),
+                   response=y,
+                   type="sem",
+                   model=class(model)[1])
+              )
+  class(res) <- "cumres"
+  
+  return(res)    
+}
+
+  
+
+################################################################################
+

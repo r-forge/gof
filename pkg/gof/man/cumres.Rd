@@ -2,7 +2,7 @@
 \alias{cumres}
 \alias{cumres.glm}
 \alias{cumres.lm}
-\title{Calculates GOF statistics based on cumulative residual processes}
+\title{Calculates GoF statistics based on cumulative residual processes}
 \description{
   Given the generalized linear models model
   \deqn{g(E(Y_i|X_{i1},...,X_{ik})) = \sum_{i=1}^k \beta_jX_{ij}}
@@ -45,7 +45,7 @@
   regression models with canonical links are supported.  
 }
 \seealso{\code{\link[timereg]{cox.aalen}} in the \code{timereg}-package
-  for similar GOF-methods for survival-data.}
+  for similar GoF-methods for survival-data.}
 \references{
 D.Y. Lin and L.J. Wei and Z. Ying (2002) \emph{Model-Checking Techniques
   Based on Cumulative Residuals}. Biometrics, Volume 58, pp 1-12.

@@ -4,7 +4,9 @@ plot.cumres <- function(x, idx=1:length(x$variable),
                         col.ci="darkblue", col.alpha=0.3, lty.ci=0, level=0.95,
                         legend=c("type1","type2","none"), xlab, ylab,
                         vs=TRUE,
-                        ylim=NULL, ...) {
+                        ylim=NULL,
+                        title,
+                        ...) {
   ylim. <- ylim
   newylab <- missing(ylab)
   newxlab <- missing(xlab)
@@ -68,6 +70,13 @@ plot.cumres <- function(x, idx=1:length(x$variable),
       ##as.list(c(col2rgb("darkblue"),10)/255))),
     }
 
+    if (!missing(title)) {
+      graphics::title(title)
+    } else {
+      if (!is.null(x$response))
+        graphics::title(x$response)
+    }
+    
     if (!is.null(legend) && legend[1]!="none" && (legend!=F)) {
       if (legend[1]=="type1")
         legend("topright", c(paste("KS-test: p=",x$KS[i],sep=""),paste("CvM-test: p=",x$CvM[i],sep="")), bg="white")
@@ -76,7 +85,7 @@ plot.cumres <- function(x, idx=1:length(x$variable),
     }
     ylim. <- NULL
   }
-  invisible()
+  invisible(x)
 }
 
 

@@ -26,7 +26,7 @@ ylim=NULL,
   \item{col.alpha}{Degree of transparency (0-1) of the prediction bands.}
   \item{lty.ci}{Line type of prediction band.}
   \item{level}{The required prediction level.}
-  \item{legend}{Type of legend where "type1" gives p-values of GOF-tests
+  \item{legend}{Type of legend where "type1" gives p-values of GoF-tests
     and "type2" gives usual type of legends.}
   \item{xlab}{Optional label of x-axis}
   \item{ylab}{Optional label of y-axis}

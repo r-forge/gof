@@ -1,6 +1,6 @@
 \name{cumres.coxph}
 \alias{cumres.coxph}
-\title{Calculates GOF measures for Cox's propoportional hazard model for right
+\title{Calculates GoF measures for Cox's propoportional hazard model for right
   censored survival times
 }
 \description{
@@ -17,7 +17,7 @@
   \item{model}{Model object (\code{lm} or \code{glm})}
   \item{variable}{List of variable to order the residuals after}
   \item{R}{Number of samples used in simulation}
-  \item{type}{Type of GOF-procedure},
+  \item{type}{Type of GoF-procedure},
   \item{plots}{Number of realizations to save for use in the
     plot-routine}
   \item{seed}{Random seed}
@@ -40,7 +40,7 @@
   \code{\link[gof]{cumres.glm}},
   \code{\link[survival]{coxph}}, and
   \code{\link[timereg]{cox.aalen}} in the \code{timereg} package
-  for similar GOF-methods for survival-data. 
+  for similar GoF-methods for survival-data. 
 }
 \examples{
 library(survival)
