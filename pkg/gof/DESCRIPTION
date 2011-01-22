@@ -1,12 +1,12 @@
 Package: gof
 Type: Package
 Title: Model-diagnostics based on cumulative residuals
-Version: 0.7-4
-Date: 2011-01-12
+Version: 0.7-5
+Date: 2011-01-22
 Author: Klaus K. Holst
 Maintainer: Klaus. K. Holst <kkho@biostat.ku.dk>
 Description: Implementation of model-checking technique based on cumulative residuals
-Depends: R (>= 2.9), survival
+Depends: R (>= 2.8), survival
 Suggests: numDeriv, lava
 License: GPL
 LazyLoad: yes

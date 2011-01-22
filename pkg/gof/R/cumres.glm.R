@@ -5,9 +5,7 @@ function(model,...) UseMethod("cumres")
   cumres.glm(model,...)
 }
 
-`cumres.glm` <-
-  cc <- 
-  function(model,
+`cumres.glm`  <- function(model,
          variable=c("predicted",colnames(model.matrix(model))),
          data=data.frame(model.matrix(model)), 
          R=500, b=0, plots=min(R,50),breakties=1e-12,
@@ -20,16 +18,30 @@ function(model,...) UseMethod("cumres")
          },
          glm = {
            f <- family(model)
-           if (f$family=="gaussian")
-             stop("Refit model using 'lm'")
-           
-           if (f$family=="poisson" & f$link=="log") {
-             dginv <- function(z) exp(z)
-           } else if (f$family=="binomial" & f$link=="logit") {
-             dginv <- function(z) exp(-z)/(1+exp(-z))^2
-           } else {
-             stop("Unsupported model!")
+           if (f$family=="gaussian") {
+             a.phi <- summary(model)$dispersion
            }
+           ## stop("Refit model using 'lm'")           
+
+           g <- f$linkfun
+           ginv <- f$linkinv
+           dginv <- f$mu.eta ## D[linkinv]
+           ##dg <- function(x) 1/dginv(g(x)) ## Dh^-1 = 1/(h'(h^-1(x)))
+           canonf <- do.call(f$family,list())           
+           caninvlink <- canonf$linkinv
+           canlink <- canonf$linkfun
+           Dcaninvlink <- canonf$mu.eta           
+           Dcanlink <- function(x) 1/Dcaninvlink(canlink(x))
+           ##gmu <- function(x) g(caninvlink(x))
+           ##invgmu <- function(z) canlink(ginv(z))
+           h <- function(x) Dcanlink(ginv(x))*dginv(x)                     
+##           if (f$family=="poisson" & f$link=="log") {
+##             dginv <- function(z) exp(z)
+##           } else if (f$family=="binomial" & f$link=="logit") {
+##             dginv <- function(z) exp(-z)/(1+exp(-z))^2
+##           } else {
+##             stop("Unsupported model!")
+##           }
          },
          stop("Unsupported model!"))
 
@@ -44,7 +56,7 @@ function(model,...) UseMethod("cumres")
   if(any(is.na(beta))) stop("Over-parametrized model")
   Xbeta <- X%*%beta
 
-  etaraw <- (as.numeric(dginv(Xbeta))*X)
+  etaraw <- (as.numeric(dginv(Xbeta)*h(Xbeta))*X)
   
   hatW.MC <- function(x) {
     myorder <- order(x)
@@ -79,7 +91,6 @@ function(model,...) UseMethod("cumres")
     ##    W <- function() { 1/sqrt(n)*cumsum(r[myorder]) }
     return(list(output=output,x=x))
   }
-  
   
   if (!is.na(match(response, variable))) variable[match(response, variable)] <- "predicted"
   variable <- unique(variable)
