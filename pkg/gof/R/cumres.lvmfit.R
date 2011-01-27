@@ -72,7 +72,8 @@ cumres.lvmfit <- function(model,y,x,
   }
   n <- length(x0)
 
-  
+
+  browser()
   hatW.MC <- function(x) {
     ord <- order(x)
     output <- .C("W",
