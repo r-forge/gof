@@ -15,6 +15,7 @@ function(model,...) UseMethod("cumres")
   switch(class(model)[1],
          lm = {
            a.phi <- summary(model)$sigma^2
+           h <- function(z) 1
          },
          glm = {
            f <- family(model)
@@ -35,35 +36,38 @@ function(model,...) UseMethod("cumres")
            ##gmu <- function(x) g(caninvlink(x))
            ##invgmu <- function(z) canlink(ginv(z))
            h <- function(x) Dcanlink(ginv(x))*dginv(x)                     
-##           if (f$family=="poisson" & f$link=="log") {
-##             dginv <- function(z) exp(z)
-##           } else if (f$family=="binomial" & f$link=="logit") {
-##             dginv <- function(z) exp(-z)/(1+exp(-z))^2
-##           } else {
-##             stop("Unsupported model!")
-##           }
+           ##           if (f$family=="poisson" & f$link=="log") {
+           ##             dginv <- function(z) exp(z)
+           ##           } else if (f$family=="binomial" & f$link=="logit") {
+           ##             dginv <- function(z) exp(-z)/(1+exp(-z))^2
+           ##           } else {
+           ##             stop("Unsupported model!")
+           ##           }
+           
          },
          stop("Unsupported model!"))
 
   response <- all.vars(formula(model))[1]
   X <- model.matrix(model)
-  n <- nrow(X)
-  
-  r <- residuals(model, type="response") ## g^{-1}(Xb)
-  yhat <- predict(model, type="response") ## y-g^{-1}(Xb)
-##  Xbeta <- predict(model, type="link") ## X*b
+  n <- nrow(X)  
+  r <- residuals(model, type="response") ## y-g^{-1}(Xb)
+  yhat <- predict(model, type="response") ## g^{-1}(Xb)
+  ##  Xbeta <- predict(model, type="link") ## X*b
   beta <- coef(model)
   if(any(is.na(beta))) stop("Over-parametrized model")
   Xbeta <- X%*%beta
 
-  etaraw <- (as.numeric(dginv(Xbeta)*h(Xbeta))*X)
-  
+  ##etaraw <- (as.numeric(dginv(Xbeta)*h(Xbeta))*X)
+  etaraw <- (as.numeric(dginv(Xbeta))*X)
+
   hatW.MC <- function(x) {
     myorder <- order(x)
     x <- x[myorder]
     Ii <- vcov(model)
-    Score <- (X*r)/a.phi
-    beta.iid <- Ii%*%t(Score[myorder,,drop=FALSE])
+    ##    Score <- (X*(as.vector(h(Xbeta))*r))/a.phi
+    A <- as.vector(h(Xbeta)*r)/a.phi 
+    S <- apply(X,2,function(x) x*A)
+    beta.iid <- Ii%*%t(S[myorder,,drop=FALSE])
     ##    print(beta.iid)
     r0 <- r[myorder]
     D0 <- etaraw[myorder,,drop=FALSE]
@@ -97,6 +101,7 @@ function(model,...) UseMethod("cumres")
   UsedData <- data[,na.omit(match(variable, names(data))),drop=FALSE]
   myvars <- names(UsedData)[apply(UsedData,2,function(x) length(unique(x))>2)] ## Only consider variables with more than two levels
   if ("predicted"%in%variable) myvars <- c("predicted",myvars)
+
   
   untie <- runif(n,0,breakties)
   
