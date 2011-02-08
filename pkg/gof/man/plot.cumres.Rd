@@ -6,13 +6,8 @@
 }
 \usage{
 \method{plot}{cumres}(x, idx=1:length(x$variable), col=c("grey"),
-                        ci=TRUE,
-                        col.ci="darkblue", col.alpha=0.3, lty.ci=0, level=0.95,
-                        legend=c("type1","type2","none"),
-xlab, ylab,
-                        vs=TRUE,
-ylim=NULL,
-                        ...)
+ci=TRUE, col.ci="darkblue", col.alpha=0.3, lty.ci=0, level=0.95,
+legend=c("type1","type2","none"), xlab, ylab, vs=TRUE, ylim=NULL,title, ...)
 }
 \arguments{
   \item{x}{Object produced by the function \code{cumres}.}
@@ -31,7 +26,8 @@ ylim=NULL,
   \item{xlab}{Optional label of x-axis}
   \item{ylab}{Optional label of y-axis}
   \item{vs}{Label of predictor}
-  \item{ylim}{Range of y axis.}
+  \item{ylim}{Range of y axis}
+  \item{title}{Main title}
   \item{...}{Additional arguments passed to the plot-routine.}
 }
 \seealso{

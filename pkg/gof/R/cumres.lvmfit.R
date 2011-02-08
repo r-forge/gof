@@ -8,9 +8,9 @@ cumres.lvmfit <- function(model,y,x,
   cl <- match.call()
   
   if (class(y)[1]=="formula") {
-    y <- getoutcome(y)
+    y <- lava::getoutcome(y)
     x <- attributes(y)$x
-    y <- decomp.specials(y)
+    y <- lava::decomp.specials(y)
   }
 
   if (is.list(y) && class(y[[1]])[1]=="formula") {
@@ -19,8 +19,8 @@ cumres.lvmfit <- function(model,y,x,
     res <- c()
     cl[[1]] <- as.name("cumres")
     for (i in 1:length(yy)) {
-      resp <- getoutcome(yy[[i]])
-      y <- decomp.specials(resp)
+      resp <- lava::getoutcome(yy[[i]])
+      y <- lava::decomp.specials(resp)
       x <- attributes(resp)$x
       cl$y <- y; cl$x <- x
       res <- c(res, list(eval.parent(cl)))      
@@ -36,13 +36,13 @@ cumres.lvmfit <- function(model,y,x,
     for (i in y) {
       iy <- iy+1
       cl$y <- i
-      yname <- ifelse(is.character(i),i,"y"%+%iy)
+      yname <- ifelse(is.character(i),i,paste("y",iy,sep=""))
       if (is.character(x) | is.list(x)) {
         ix <- 0
         for (j in x) {
           ix <- ix+1
           cl$x <- j
-          xname <- ifelse(is.character(j),j,"x"%+%ix)          
+          xname <- ifelse(is.character(j),j,paste("x",ix,sep=""))          
           newres <- list(eval.parent(cl))
           names(newres) <- paste(yname,xname,sep="<-")
           res <- c(res,newres)
@@ -64,7 +64,7 @@ cumres.lvmfit <- function(model,y,x,
     for (j in x) {
       ix <- ix+1
       cl$x <- j
-      xname <- ifelse(is.character(j),j,"x"%+%ix)          
+      xname <- ifelse(is.character(j),j,paste("x",ix,sep=""))          
       newres <- list(eval.parent(cl))
       names(newres) <- paste(yname,xname,sep="<-")
       res <- c(res,newres)
@@ -109,7 +109,6 @@ cumres.lvmfit <- function(model,y,x,
                  , PACKAGE="gof")
     return(list(output=output,x=x[ord]))
   }
-  
   
   if (is.function(y)) {
     r <- y(p)

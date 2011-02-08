@@ -35,7 +35,7 @@ function(model,...) UseMethod("cumres")
            Dcanlink <- function(x) 1/Dcaninvlink(canlink(x))
            ##gmu <- function(x) g(caninvlink(x))
            ##invgmu <- function(z) canlink(ginv(z))
-           h <- function(x) Dcanlink(ginv(x))*dginv(x)                                
+           h <- function(z) Dcanlink(ginv(z))*dginv(z)                                
          },
          stop("Unsupported model!"))
 
