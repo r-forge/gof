@@ -6,7 +6,7 @@
   structural equation models fitted with the \code{lava} package.
 }
 \usage{
-\method{cumres}{lvmfit}(model,y,x,data=model.frame(model),p,R=100, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),...)
+\method{cumres}{lvmfit}(model,y,x,data=model.frame(model),p,R=1000,b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),...)
 
 }
 \arguments{

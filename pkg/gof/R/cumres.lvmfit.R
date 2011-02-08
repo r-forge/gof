@@ -1,7 +1,7 @@
 cumres.lvmfit <- function(model,y,x,
-                           data=model.frame(model),p,
-                           R=100, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
-                            ...) {
+                          data=model.frame(model),p,
+                          R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
+                          ...) {
   if (!require("numDeriv")) stop("package 'numDeriv' not available")    
   if (!require("lava")) stop("package 'lava' not available")    
 
@@ -13,6 +13,21 @@ cumres.lvmfit <- function(model,y,x,
     y <- decomp.specials(y)
   }
 
+  if (is.list(y) && class(y[[1]])[1]=="formula") {
+    yy <- y
+    y <- list(); x <- list()
+    res <- c()
+    cl[[1]] <- as.name("cumres")
+    for (i in 1:length(yy)) {
+      resp <- getoutcome(yy[[i]])
+      y <- decomp.specials(resp)
+      x <- attributes(resp)$x
+      cl$y <- y; cl$x <- x
+      res <- c(res, list(eval.parent(cl)))      
+    }
+    return(res)
+  }
+  
   cl$y <- y; cl$x <- x
   cl[[1]] <- as.name("cumres")
   if ((is.character(y) | is.list(y)) & length(y)>1) {
@@ -72,11 +87,9 @@ cumres.lvmfit <- function(model,y,x,
   }
   n <- length(x0)
 
-
-  browser()
   hatW.MC <- function(x) {
     ord <- order(x)
-    output <- .C("W",
+    output <- .C("W2",
                  R=as.integer(R), ## Number of realizations
                  b=as.double(b), ## Moving average parameter
                  n=as.integer(n), ## Number of observations

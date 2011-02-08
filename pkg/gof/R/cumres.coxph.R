@@ -1,7 +1,7 @@
 `cumres.coxph` <- function(model,
          variable=c(colnames(model.matrix(model))),
          type=c("score","residual"),
-         R=500, plots=min(R,50), seed=round(runif(1,1,1e9)), ...) {
+         R=1000, plots=min(R,50), seed=round(runif(1,1,1e9)), ...) {
 
   require(survival)
   mt <- model.frame(model)

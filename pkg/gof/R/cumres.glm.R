@@ -5,10 +5,10 @@ function(model,...) UseMethod("cumres")
   cumres.glm(model,...)
 }
 
-`cumres.glm`  <- function(model,
+`cumres.glm` <- function(model,
          variable=c("predicted",colnames(model.matrix(model))),
          data=data.frame(model.matrix(model)), 
-         R=500, b=0, plots=min(R,50),breakties=1e-12,
+         R=1000, b=0, plots=min(R,50),breakties=1e-12,
          seed=round(runif(1,1,1e9)),...) {
   dginv <- function(z) 1
   a.phi <- 1
@@ -35,15 +35,7 @@ function(model,...) UseMethod("cumres")
            Dcanlink <- function(x) 1/Dcaninvlink(canlink(x))
            ##gmu <- function(x) g(caninvlink(x))
            ##invgmu <- function(z) canlink(ginv(z))
-           h <- function(x) Dcanlink(ginv(x))*dginv(x)                     
-           ##           if (f$family=="poisson" & f$link=="log") {
-           ##             dginv <- function(z) exp(z)
-           ##           } else if (f$family=="binomial" & f$link=="logit") {
-           ##             dginv <- function(z) exp(-z)/(1+exp(-z))^2
-           ##           } else {
-           ##             stop("Unsupported model!")
-           ##           }
-           
+           h <- function(x) Dcanlink(ginv(x))*dginv(x)                                
          },
          stop("Unsupported model!"))
 
@@ -56,22 +48,18 @@ function(model,...) UseMethod("cumres")
   beta <- coef(model)
   if(any(is.na(beta))) stop("Over-parametrized model")
   Xbeta <- X%*%beta
-
-  ##etaraw <- (as.numeric(dginv(Xbeta)*h(Xbeta))*X)
+ 
   etaraw <- (as.numeric(dginv(Xbeta))*X)
-
   hatW.MC <- function(x) {
     myorder <- order(x)
     x <- x[myorder]
     Ii <- vcov(model)
-    ##    Score <- (X*(as.vector(h(Xbeta))*r))/a.phi
+    ##    S <- (X*(as.vector(h(Xbeta))*r))/a.phi
     A <- as.vector(h(Xbeta)*r)/a.phi 
     S <- apply(X,2,function(x) x*A)
     beta.iid <- Ii%*%t(S[myorder,,drop=FALSE])
-    ##    print(beta.iid)
     r0 <- r[myorder]
     D0 <- etaraw[myorder,,drop=FALSE]
-    ##    print(head(t(beta.iid)))
     Wfun <- "W2"
     if (b!=0) { Wfun <- "W" }
     output <- .C(Wfun,
@@ -79,7 +67,7 @@ function(model,...) UseMethod("cumres")
                  b=as.double(b), ## Moving average parameter
                  n=as.integer(n), ## Number of observations
                  npar=as.integer(nrow(Ii)),
-                 xdata=as.double(x), ## Observations to cummulate after 
+                 xdata=as.double(x), ## Observations to cumulate after 
                  rdata=as.double(r0), ## Residuals (one-dimensional)
                  betaiiddata=as.double(beta.iid), ## Score-process
                  etarawdata=as.double(D0), ## Eta (derivative of terms in cummulated process W)
@@ -98,8 +86,8 @@ function(model,...) UseMethod("cumres")
   
   if (!is.na(match(response, variable))) variable[match(response, variable)] <- "predicted"
   variable <- unique(variable)
-  UsedData <- data[,na.omit(match(variable, names(data))),drop=FALSE]
-  myvars <- names(UsedData)[apply(UsedData,2,function(x) length(unique(x))>2)] ## Only consider variables with more than two levels
+  UsedData <- X[,na.omit(match(variable, colnames(X))),drop=FALSE]
+  myvars <- colnames(UsedData)[apply(UsedData,2,function(x) length(unique(x))>2)] ## Only consider variables with more than two levels
   if ("predicted"%in%variable) myvars <- c("predicted",myvars)
 
   
@@ -118,8 +106,8 @@ function(model,...) UseMethod("cumres")
     x <- NULL
     if (v=="predicted") {
       x <- yhat
-    } else if (v %in% names(data)) {
-      x <- data[,v]       
+    } else if (v %in% colnames(X)) {
+      x <- X[,v]       
     }
     if (!is.null(x)) {
       UsedVars <- c(UsedVars, v)

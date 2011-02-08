@@ -209,20 +209,6 @@ inline Matrix<T> apply(const Matrix<T> &m, unsigned doRow, FUNCTOR fun){
 
  
 template <typename T>
-inline scythe::Matrix<T> cumsum(const scythe::Matrix<T> &M) {
-  unsigned n = M.rows();  
-  if (M.rows()==1)
-    n = M.cols();    
-  scythe::Matrix<T> res(M.rows(), M.cols());  
-  res(0,scythe::_) = M(0,scythe::_);
-  for (unsigned i=1; i<n; i++) {
-    res(i,scythe::_) = res(i-1,scythe::_)+M(i,scythe::_);
-  }
-  return(res);
-}
-
-
-template <typename T>
 inline std::string Rout2(scythe::Matrix<T> const& M) {
   std::ostringstream out;
   

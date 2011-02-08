@@ -130,11 +130,6 @@ extern "C" {
     Matrix<double> Wobs = r;
 
     Matrix<double> W = Wi(r, x, betaiid, etaraw, *b, Wobs);
-    // cerr << "betaiid=" << Rout(betaiid) << endl;
-    // cerr << "etaraw=" << Rout(etaraw) << endl;
-    // cerr << "r=" << Rout(r) << endl;
-    // cerr << "Wq=" << Rout(W) << endl;
-
     Matrix<double> sdW = apply(W,1,ss2);
 
     double KSobs = KolmogorovSmirnov(Wobs);
@@ -147,7 +142,7 @@ extern "C" {
     for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);
 
     //    cerr << "Starting simulation\n";
-    //    cerr << "W=" << W <<"\n";
+    //    cerr << "W=" << Rout(W) <<"\n";
     Matrix<double> Res(min((double)*plotnum,(double)*R),*n);
     for (unsigned i=0; i< *R; i++) {
       for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);
@@ -203,15 +198,18 @@ extern "C" {
     Matrix<double, Col> etaraw(*n, *npar, etarawdata);    
     Matrix<double> r(*n, 1, rdata);
     Matrix<double, Col> betaiid(*npar, *n, betaiiddata);   
-
+    
+    /*
     Matrix<double> Wobs = r; // Wobs[0]=r[0];
     Matrix<double> Seta = etaraw; 
     for (unsigned j=1; j<(*n); j++) {
       Wobs[j] += Wobs[j-1];
       Seta(j,_) += Seta(j-1,_);
     }
-    //    Wobs = cumsum(r)/sqrt(*n);
-    Wobs = 1/sqrt(*n)*Wobs;
+    Wobs = 1/sqrt(*n)*Wobs;    
+    */
+    Matrix<double> Seta = cumsum2(etaraw,x);
+    Matrix<double> Wobs = 1/sqrt(*n)*cumsum2(r,x);
 
     double KSobs = KolmogorovSmirnov(Wobs);
     double CvMobs = CramerVonMises(Wobs,x); 
@@ -227,8 +225,10 @@ extern "C" {
       for (unsigned i=0; i<=j; i++)
 	W[j] -= 2*r[i]*wj[i];    
     }
-    Matrix<double> vW = (cumsum(r%r)+W)/(*n);
-    Matrix<double> sdW = sqrt(cumsum(r%r)+W)/sqrt(*n);
+    Matrix<double> vW = (cumsum2(r%r,x)+W)/(*n);
+    //Matrix<double> vW = (cumsum(r%r)+W)/(*n);
+    Matrix<double> sdW = sqrt(cumsum2(r%r,x)+W)/sqrt(*n);
+    //Matrix<double> sdW = sqrt(cumsum(r%r)+W)/sqrt(*n);
     sdW[*n-1] = 1.0;
     for (unsigned j=0; j<(*n); j++) { // Avoid division by zero (cvalues)
       if (sdW[j]<SDtol) sdW[j] = SDtol;
@@ -238,10 +238,18 @@ extern "C" {
     for (unsigned i=0; i< *R; i++) {
       for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);	
       Matrix<double> Nr = N%r;
-      Matrix<double> What = cumsum(Nr)/sqrt(*n);
+      Matrix<double> What = cumsum2(Nr,x)/sqrt(*n);
+      //Matrix<double> What = cumsum(Nr/sqrt(*n));      
+      //      Matrix<double> What = Nr/sqrt(*n);
+      //      for (unsigned k=1; k<(*n); k++) {
+      //	What[k] += What[k-1];
+      //      }     
+
       Matrix<double> ISr = multRow(betaiid,t(N));
+      //      Matrix<double> ISr = multRow(betaiid,t(N));
       Matrix<double> SumISr = apply(ISr,1,sum);
       Matrix<double> KK=1/sqrt(*n)*Seta*SumISr;
+      //Matrix<double> KK=1/sqrt(*n)*SumISr;
       What -= KK;
       cvalues[i] = max(fabs(What/sdW));
       double KShat = KolmogorovSmirnov(What);

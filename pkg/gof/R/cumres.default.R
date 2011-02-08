@@ -2,7 +2,7 @@
   function(model,score,information,
            residualfun,variable,
            data=model.frame(model),par=coef(model),
-           R=500, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
+           R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
            debug=FALSE, ...) {
 
     if(any(is.na(par))) stop("Over-parametrized model")

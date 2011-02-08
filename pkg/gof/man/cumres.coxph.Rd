@@ -11,7 +11,7 @@
 \method{cumres}{coxph} (model,
          variable=c(colnames(model.matrix(model))),
          type=c("score","residual"),
-         R=500, plots=min(R,50), seed=round(runif(1,1,1e9)), ...)
+         R=1000, plots=min(R,50), seed=round(runif(1,1,1e9)), ...)
 }
 \arguments{
   \item{model}{Model object (\code{lm} or \code{glm})}
