@@ -105,7 +105,7 @@ function(model,...) UseMethod("cumres")
   for (v in myvars) {
     x <- NULL
     if (v=="predicted") {
-      x <- yhat
+      x <- yhat ## Xbeta
     } else if (v %in% colnames(X)) {
       x <- X[,v]       
     }
