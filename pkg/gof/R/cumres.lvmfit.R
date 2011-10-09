@@ -1,4 +1,19 @@
-cumres.lvmfit <- function(model,y,x,
+cumresMaxSet <- function(m,var,...) {
+  A <- t(index(m)$A)
+  Afix <- A; Afix[t(index(m)$M0)==1] <- 0
+  A[A!=0] <- 1
+  P <- index(m)$P
+  k <- nrow(A)
+  I <- diag(k)
+  B <- rbind(I,solve(I-A))
+  VV <- B%*%P%*%t(B)
+  u.var <- index(m)$vars
+  V0 <- VV[seq(length(vars(m))),seq(length(vars(m)))+length(vars(m))][,endogenous(m)]
+  rownames(V0) <- vars(m)
+  names(which(V0[var,]==0))
+}
+
+cumres.lvmfit <- function(model,y,x,full=FALSE,
                           data=model.frame(model),p,
                           R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
                           ...) {
@@ -79,10 +94,15 @@ cumres.lvmfit <- function(model,y,x,
   if (is.function(x))
     x0 <- x(p)
   if (is.character(x)) {
-    if (x %in% latent(model)) {
-      x0 <- attributes(predict(model))[["eta.x"]][x,]
-    } else {
-      x0 <- data[,x]
+    if (full) {
+      predictby <- cumresMaxSet(model,y,...)
+      x0 <- predict(model,predictby)[,x]
+    } else {    
+      if (x %in% latent(model)) {
+        x0 <- attributes(predict(model))[["eta.x"]][x,]
+      } else {
+        x0 <- data[,x]
+      }
     }
   }
   n <- length(x0)

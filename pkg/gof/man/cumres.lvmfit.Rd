@@ -6,7 +6,7 @@
   structural equation models fitted with the \code{lava} package.
 }
 \usage{
-\method{cumres}{lvmfit}(model,y,x,data=model.frame(model),p,R=1000,b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),...)
+\method{cumres}{lvmfit}(model,y,x,full=FALSE,data=model.frame(model),p,R=1000,b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),...)
 
 }
 \arguments{
@@ -15,6 +15,11 @@
   checked. Alternatively the outcome specified as a function or a
   string with the name of the outcome in the model.}
 \item{x}{Predictor. A function, vector or character}
+\item{full}{If FALSE the prediction, Pr, of the variable that are ordered
+  after is only calculated based on the conditional distribution given
+  covariates. If TRUE the conditional expectation is based on the
+  largest set of covariates and endogenous variables such that the
+  residual and Pr are uncorrelated.}
 \item{data}{data.frame (default is the model.frame of the model)}
 \item{p}{Optional parameter vector}
 \item{R}{Number of processes to simulate}
