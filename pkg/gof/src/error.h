@@ -51,16 +51,20 @@
 #ifndef SCYTHE_ERROR_H
 #define SCYTHE_ERROR_H
 
+#include <R.h>           //  Rprintf()
 #include <exception>
 #include <string>
 #include <sstream>
 #include <iostream>
 #include <vector>
 
+
 /*! @cond */
 #ifdef SCYTHE_DEBUG_LIB
-#define SCYTHE_DEBUG_MSG(MSG)                             \
-{ std::cout << "SCYTHE_DEBUG_LIB: " << MSG << std::endl; }
+#define SCYTHE_DEBUG_MSG(MSG) {			            \
+  std::stringstream _SCYTHE_ss;		                    \
+  _SCYTHE_ss << "SCYTHE_DEBUG_LIB: " << MSG << std::endl;   \
+  Rprintf((_SCYTHE_ss.str()).c_str()); }
 #else
 #define SCYTHE_DEBUG_MSG(MSG)
 #endif
@@ -122,11 +126,14 @@
 #define SCYTHE_THROW_30(EXCEP,MSG)
 #endif
 
-#define SCYTHE_WARN(MSG)                                              \
-  {                                                                   \
-  std::cerr << "WARNING in " << __FILE__ << ", "                      \
-    << __func__ << ", " << __LINE__ << ": "                \
-    << MSG << "\n";                                                   \
+
+#define SCYTHE_WARN(MSG)                                                \
+  {									\
+    std::stringstream _errorout;					\
+    _errorout << "WARNING in " << __FILE__ << ", "			\
+	      << __func__ << ", " << __LINE__ << ": "			\
+	      << MSG << "\n";						\
+    Rprintf((_errorout.str()).c_str());					\
   }
 
 #define SCYTHE_CHECK_WARN(CHECK,MSG)                                  \
@@ -593,9 +600,10 @@ namespace scythe
   // The definition of our terminate handler described above
   inline void scythe_terminate ()
   {
-    std::cerr << serr->what() << std::endl;
-    std::cerr << std::endl;
-    abort ();
+    //    std::cerr << serr->what() << std::endl;
+    //    std::cerr << std::endl;
+    //    error ();
+    error ("Scythe");
   }
 
 }        // end namspace SCYTHE

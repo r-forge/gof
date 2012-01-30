@@ -1,31 +1,32 @@
-cumresMaxSet <- function(m,var,...) {
-  A <- t(index(m)$A)
-  Afix <- A; Afix[t(index(m)$M0)==1] <- 0
-  A[A!=0] <- 1
-  P <- index(m)$P
-  k <- nrow(A)
-  I <- diag(k)
-  B <- rbind(I,solve(I-A))
-  VV <- B%*%P%*%t(B)
-  u.var <- index(m)$vars
-  V0 <- VV[seq(length(vars(m))),seq(length(vars(m)))+length(vars(m))][,endogenous(m)]
-  rownames(V0) <- vars(m)
-  names(which(V0[var,]==0))
-}
+  cumresMaxSet <- function(m,var,...) {
+    if (!require("lava")) stop("package 'lava' not available")
+    A <- t(lava::index(m)$A)
+    Afix <- A; Afix[t(lava::index(m)$M0)==1] <- 0
+    A[A!=0] <- 1
+    P <- lava::index(m)$P
+    k <- nrow(A)
+    I <- diag(k)
+    B <- rbind(I,solve(I-A))
+    VV <- B%*%P%*%t(B)
+    u.var <- lava::index(m)$vars
+    V0 <- VV[seq(length(lava::vars(m))),seq(length(lava::vars(m)))+length(lava::vars(m))][,lava::endogenous(m)]
+    rownames(V0) <- lava::vars(m)
+    names(which(V0[var,]==0))
+  }
 
 cumres.lvmfit <- function(model,y,x,full=FALSE,
                           data=model.frame(model),p,
                           R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
                           ...) {
   if (!require("numDeriv")) stop("package 'numDeriv' not available")    
-  if (!require("lava")) stop("package 'lava' not available")    
+  if (!require("lava")) stop("package 'lava' not available")
 
   cl <- match.call()
   
   if (class(y)[1]=="formula") {
-    y <- lava::getoutcome(y)
+    y <- lava:::getoutcome(y)
     x <- attributes(y)$x
-    y <- lava::decomp.specials(y)
+    y <- lava:::decomp.specials(y)
   }
 
   if (is.list(y) && class(y[[1]])[1]=="formula") {
@@ -34,8 +35,8 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
     res <- c()
     cl[[1]] <- as.name("cumres")
     for (i in 1:length(yy)) {
-      resp <- lava::getoutcome(yy[[i]])
-      y <- lava::decomp.specials(resp)
+      resp <- lava:::getoutcome(yy[[i]])
+      y <- lava:::decomp.specials(resp)
       x <- attributes(resp)$x
       cl$y <- y; cl$x <- x
       res <- c(res, list(eval.parent(cl)))      
@@ -89,7 +90,7 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
 
 
   if (missing(p))
-    p <- pars(model)
+    p <- lava::pars(model)
   x0 <- x
   if (is.function(x))
     x0 <- x(p)
@@ -98,7 +99,7 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
       predictby <- cumresMaxSet(model,y,...)
       x0 <- predict(model,predictby)[,x]
     } else {    
-      if (x %in% latent(model)) {
+      if (x %in% lava::latent(model)) {
         x0 <- attributes(predict(model))[["eta.x"]][x,]
       } else {
         x0 <- data[,x]
@@ -134,13 +135,13 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
     r <- y(p)
     grad <- attributes(r)$grad
     if (is.null(grad))
-      grad <- -numDeriv::jacobian(y,p,method=lava.options()$Dmethod)
+      grad <- -numDeriv::jacobian(y,p,method=lava::lava.options()$Dmethod)
   } else {
     myres <- function(p) {
       attributes(predict(model,p=p))$epsilon.y[,y]
     }
     r <- myres(p)
-    grad <- -numDeriv::jacobian(myres,p,method=lava.options()$Dmethod)
+    grad <- -numDeriv::jacobian(myres,p,method=lava::lava.options()$Dmethod)
   }     
   ##    Ii <- solve(information(model,p), num=TRUE)
   Ii <- model$vcov
@@ -150,7 +151,7 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
   grad <- grad[ord,]
   r <- r[ord]
   Ii <- model$vcov
-  Score <- score(model,data=data,p=p,indiv=TRUE,weight=Weight(model))[ord,]
+  Score <- lava::score(model,data=data,p=p,indiv=TRUE,weight=lava::Weight(model))[ord,]
   beta.iid <- Ii%*%t(Score)
   beta.iid[is.na(beta.iid)] <- 0
 
