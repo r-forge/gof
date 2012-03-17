@@ -5,7 +5,7 @@ Version: 0.8-1
 Date: 2012-01-30
 Author: Klaus K. Holst
 Maintainer: Klaus. K. Holst <kkho@biostat.ku.dk>
-Description: Implementation of model-checking technique based on cumulative residuals
+Description: Implementation of model-checking techniques for generalized linear models and linear structural equation models based on cumulative residuals
 Depends: R (>= 2.8), survival
 Suggests: numDeriv, lava
 License: GPL
