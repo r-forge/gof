@@ -1,3 +1,6 @@
+Changes to Version 0.8-2 (14/6-2012)
+	- Updated to new scythestat version
+
 Changes to Version 0.7-0 (1/10-2010)
 	- Fixed bug introduced by new model.matrix implementation for 'coxph' objects
 	- Initial support added for structural equation models (lava)
