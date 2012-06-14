@@ -28,15 +28,15 @@
 #ifndef SCYTHE_STAT_H
 #define SCYTHE_STAT_H
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "matrix.h"
 #include "algorithm.h"
 #include "error.h"
-/* #else */
-/* #include "scythestat/matrix.h" */
-/* #include "scythestat/algorithm.h" */
-/* #include "scythestat/error.h" */
-/* #endif */
+#else
+#include "scythestat/matrix.h"
+#include "scythestat/algorithm.h"
+#include "scythestat/error.h"
+#endif
 
 #include <numeric>
 #include <set>
@@ -224,7 +224,7 @@ namespace scythe {
   T
   median (const Matrix<T,PO,PS> &A)
   {
-    Matrix<T, PO, PS> temp(A);
+    Matrix<T, PO, Concrete> temp(A);
     uint n = temp.size();
 
     sort(temp.begin(), temp.end());
@@ -271,7 +271,7 @@ namespace scythe {
   T
   mode (const Matrix<T,PO,PS> &A)
   {
-    Matrix<T, PO, PS> temp(A);
+    Matrix<T, PO, Concrete> temp(A);
     
     sort(temp.begin(), temp.end());
 

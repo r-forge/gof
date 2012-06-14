@@ -37,17 +37,16 @@
 
 #include <iterator>
 
-/*#ifdef SCYTHE_COMPILE_DIRECT
- */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "defs.h"
 #include "error.h"
 #include "matrix.h"
-/*#else
+#else
 #include "scythestat/defs.h"
 #include "scythestat/error.h"
 #include "scythestat/matrix.h"
 #endif
-*/
+
 /* The const_matrix_iterator and matrix_iterator classes are
  * essentially identical, except for the return types of the *, ->,
  * and [] operators.  matrix_iterator extends const_matrix_iterator,

@@ -35,15 +35,24 @@
 #include <functional>
 #include <algorithm>
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "defs.h"
 #include "matrix.h"
 #include "matrix_random_access_iterator.h"
-/* #else */
-/* #include "scythestat/defs.h" */
-/* #include "scythestat/matrix.h" */
-/* #include "scythestat/matrix_random_access_iterator.h" */
-/* #endif */
+#else
+#include "scythestat/defs.h"
+#include "scythestat/matrix.h"
+#include "scythestat/matrix_random_access_iterator.h"
+#endif
+
+// These are just goofy
+
+#ifdef SCYTHE_RPACK
+#undef DO
+#undef DS
+#undef SO
+#undef SS
+#endif
 
 namespace scythe {
   namespace {

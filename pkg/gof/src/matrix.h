@@ -44,7 +44,7 @@
 #ifndef SCYTHE_MATRIX_H
 #define SCYTHE_MATRIX_H
 
-//#include <climits>
+#include <climits>
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -52,12 +52,11 @@
 #include <fstream>
 #include <iterator>
 #include <algorithm>
-#include <limits.h> // v4.3
 //#include <numeric>
 #include <functional>
 #include <list>
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "defs.h"
 #include "algorithm.h"
 #include "error.h"
@@ -68,18 +67,18 @@
 #ifdef SCYTHE_LAPACK
 #include "lapack.h"
 #endif
-/* #else */
-/* #include "scythestat/defs.h" */
-/* #include "scythestat/algorithm.h" */
-/* #include "scythestat/error.h" */
-/* #include "scythestat/datablock.h" */
-/* #include "scythestat/matrix_random_access_iterator.h" */
-/* #include "scythestat/matrix_forward_iterator.h" */
-/* #include "scythestat/matrix_bidirectional_iterator.h" */
-/* #ifdef SCYTHE_LAPACK */
-/* #include "scythestat/lapack.h" */
-/* #endif */
-/* #endif */
+#else
+#include "scythestat/defs.h"
+#include "scythestat/algorithm.h"
+#include "scythestat/error.h"
+#include "scythestat/datablock.h"
+#include "scythestat/matrix_random_access_iterator.h"
+#include "scythestat/matrix_forward_iterator.h"
+#include "scythestat/matrix_bidirectional_iterator.h"
+#ifdef SCYTHE_LAPACK
+#include "scythestat/lapack.h"
+#endif
+#endif
 
 namespace scythe {
 
@@ -1277,10 +1276,10 @@ namespace scythe {
 					DBRef ()
 			{
         if (STYLE == Concrete) {
-          referenceNew(M.size());
+          this->referenceNew(M.size());
           scythe::copy<ORDER,ORDER>(M, *this);
         } else // STYLE == View
-          referenceOther(M);
+          this->referenceOther(M);
 			}
 
       /*! \brief Cross order and/or style copy constructor.
@@ -1324,10 +1323,10 @@ namespace scythe {
 					DBRef ()
 			{
         if (STYLE == Concrete) {
-          referenceNew(M.size());
+          this->referenceNew(M.size());
           scythe::copy<ORDER,ORDER> (M, *this);
         } else // STYLE == View
-          referenceOther(M);
+          this->referenceOther(M);
 			}
 
       /*! \brief Cross type copy constructor
@@ -1475,8 +1474,8 @@ namespace scythe {
           SCYTHE_THROW(scythe_style_error, 
               "Concrete matrices cannot reference other matrices");
         } else {
-          referenceOther(M);
-          mimic(M);
+          this->referenceOther(M);
+          this->mimic(M);
         }
 			}
 
@@ -1888,6 +1887,17 @@ namespace scythe {
 				return (Matrix<T_type, ORDER, View>
             (*this, i, 0, i, Base::cols() - 1));
 			}	
+
+     /*! \brief Returns single element in matrix as scalar type
+      *
+      * This method converts a matrix object to a single scalar
+      * element of whatever type the matrix is composed of.  The
+      * method simply returns the element at position zero; if error
+      * checking is turned on the method with throw an error if the
+      * matrix is not, in fact, 1x1.
+      *
+      * \throw scythe_conformation_error (Level 1)
+      */
 
       /**** ASSIGNMENT OPERATORS ****/
 
@@ -2473,8 +2483,8 @@ namespace scythe {
          * if we're concrete
          */
         Matrix<T_type, ORDER> res = (*this) * M;
-        referenceOther(res);
-        mimic(res);
+        this->referenceOther(res);
+        this->mimic(res);
 
 				return *this;
 			}
@@ -2563,8 +2573,8 @@ namespace scythe {
           }
         }
        
-        referenceOther(res);
-        mimic(res);
+        this->referenceOther(res);
+        this->mimic(res);
 
         return *this;
       }
@@ -2735,7 +2745,7 @@ namespace scythe {
         if (preserve) {
           /* TODO Optimize this case.  It is rather clunky. */
           Matrix<T_type, ORDER, View> tmp(*this);
-          DBRef::referenceNew(rows * cols);
+          this->referenceNew(rows * cols);
           Base::resize(rows, cols);
           uint min_cols = std::min(Base::cols(), tmp.cols());
           uint min_rows = std::min(Base::rows(), tmp.rows());
@@ -2751,7 +2761,7 @@ namespace scythe {
                 (*this)(i, j) = tmp(i, j);
           }
         } else {
-          DBRef::referenceNew(rows * cols);
+          this->referenceNew(rows * cols);
           Base::resize(rows, cols);
         }
       }
@@ -2844,8 +2854,8 @@ namespace scythe {
          * redirected at another block) like here.
          */
 
-        referenceOther(M);
-        mimic(M);
+        this->referenceOther(M);
+        this->mimic(M);
 
         M.referenceOther(tmp);
         M.mimic(tmp);
@@ -2966,6 +2976,8 @@ namespace scythe {
        */
       inline bool isLowerTriangular () const
       {
+        if (! Base::isSquare())
+          return false;
         // TODO view+iterator if optimized
         if (ORDER == Row) {
           for (uint i = 0; i < Base::rows(); ++i)
@@ -2993,6 +3005,8 @@ namespace scythe {
        */
       inline bool isUpperTriangular () const
       {
+        if (! Base::isSquare())
+          return false;
         // TODO view+iterator if optimized
         if (ORDER == Row) {
           for (uint i = 0; i < Base::rows(); ++i)
@@ -3086,9 +3100,9 @@ namespace scythe {
       inline bool
       equals(const Matrix<T_type, O, S>& M) const
       {
-        if (data_ == M.data_ && STYLE == Concrete && S == Concrete)
+        if (data_ == M.getArray() && STYLE == Concrete && S == Concrete)
           return true;
-        else if (data_ == M.data_ && Base::rows() == M.rows() 
+        else if (data_ == M.getArray() && Base::rows() == M.rows() 
                  && Base::cols() == M.cols()) {
           return true;
         } else if (this->isNull() && M.isNull())
@@ -3167,7 +3181,7 @@ namespace scythe {
        */
       inline void
       save (const std::string& path, const char flag = 'n',
-            const bool header = false)
+            const bool header = false) const
       {
         std::ofstream out;
         if (flag == 'n') {
@@ -5053,7 +5067,7 @@ namespace scythe {
    */
 
   template<>
-  Matrix<>
+  inline Matrix<>
   operator*<double,Col,Concrete,Col,Concrete>
   (const Matrix<>& lhs, const Matrix<>& rhs)
   {

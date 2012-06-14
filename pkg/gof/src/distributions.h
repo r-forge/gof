@@ -34,35 +34,6 @@
  * implement these overloaded versions of the distribution functions
  * in terms of both generalized and default templates to allow for
  * explicit control over the template type of the returned Matrix.
- *
- * \note Doxygen does not correctly expand the macro definitions we use
- * to generate the Matrix versions of the various distribution
- * functions.  Therefore, it incorrectly substitutes the macro
- * variable
- * __VA_ARGS__ for the actual parameter values in the parameter lists
- * of each of these functions.  For example, the definitions of the
- * Matrix versions of pbeta are listed as
- * \code
- * template<matrix_order RO, matrix_style RS, matrix_order PO, matrix_style PS>
- * Matrix<double, RO, RS> scythe::pbeta (const Matrix<double, PO, PS> &X, __VA_ARGS__)
- *
- * template<matrix_order O, matrix_style S>
- * Matrix<double, O, Concrete> scythe::pbeta (const Matrix<double, O, S> &X, __VA_ARGS__)
- * \endcode
- * when they should be
- * \code
- * template<matrix_order RO, matrix_style RS, matrix_order PO, matrix_style PS>
- * Matrix<double, RO, RS> scythe::pbeta (const Matrix<double, PO, PS> &X, double a, double b)
- *
- * template<matrix_order O, matrix_style S>
- * Matrix<double, O, Concrete> scythe::pbeta (const Matrix<double, O, S> &X, double a, double b)
- * \endcode
- *
- * \par
- * Furthermore, Doxygen erroneously lists a number of variables at the
- * end of this document that are not, in fact, declared in
- * distributions.h.  Again, this error is a result of Doxygen's macro
- * parsing capabilities.
  * 
  */
 
@@ -93,15 +64,15 @@
 #include <ieeefp.h>
 #endif
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "matrix.h"
 #include "ide.h"
 #include "error.h"
-/* #else */
-/* #include "scythestat/matrix.h" */
-/* #include "scythestat/ide.h" */
-/* #include "scythestat/error.h" */
-/* #endif */
+#else
+#include "scythestat/matrix.h"
+#include "scythestat/ide.h"
+#include "scythestat/error.h"
+#endif
 
 /* Fill in some defs from R that aren't in math.h */
 #ifndef M_PI
@@ -2536,8 +2507,6 @@ namespace scythe {
        -0.5 * (t(x - mu)) * invpd(Sigma) * (x-mu) )[0];
   }
 
-  // Addon (KKHO):
-  #include "mvnorm.h"
 } // end namespace scythe
 
 

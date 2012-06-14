@@ -32,15 +32,15 @@
 #ifndef SCYTHE_MATH_H
 #define SCYTHE_MATH_H
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "matrix.h"
 #include "algorithm.h"
 #include "error.h"
-/* #else */
-/* #include "scythestat/matrix.h" */
-/* #include "scythestat/algorithm.h" */
-/* #include "scythestat/error.h" */
-/* #endif */
+#else
+#include "scythestat/matrix.h"
+#include "scythestat/algorithm.h"
+#include "scythestat/error.h"
+#endif
 
 #include <cmath>
 #include <numeric>

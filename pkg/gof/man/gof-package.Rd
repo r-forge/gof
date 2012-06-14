@@ -10,8 +10,8 @@
 \tabular{ll}{
 Package: \tab gof\cr
 Type: \tab Package\cr
-Version: \tab 0.8-1\cr
-Date: \tab 2011-01-30\cr
+Version: \tab 0.8-2\cr
+Date: \tab 2011-06-14\cr
 License: \tab GPL\cr
 LazyLoad: \tab yes\cr
 }

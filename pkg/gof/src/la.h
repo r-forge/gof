@@ -34,21 +34,21 @@
 #ifndef SCYTHE_LA_H
 #define SCYTHE_LA_H
 
-/* #ifdef SCYTHE_COMPILE_DIRECT */
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "matrix.h"
 #include "algorithm.h"
 #include "error.h"
 #ifdef SCYTHE_LAPACK
 #include "lapack.h"
 #endif
-/* #else */
-/* #include "scythestat/matrix.h" */
-/* #include "scythestat/algorithm.h" */
-/* #include "scythestat/error.h" */
-/* #ifdef SCYTHE_LAPACK */
-/* #include "scythestat/lapack.h" */
-/* #endif */
-/* #endif */
+#else
+#include "scythestat/matrix.h"
+#include "scythestat/algorithm.h"
+#include "scythestat/error.h"
+#ifdef SCYTHE_LAPACK
+#include "scythestat/lapack.h"
+#endif
+#endif
 
 #include <numeric>
 #include <algorithm>
@@ -590,7 +590,7 @@ namespace scythe {
   Matrix<T, RO, RS>
   vech (const Matrix<T, PO, PS>& M)
   {
-    SCYTHE_CHECK_20(! M.isSymmetric(), scythe_dimension_error,
+    SCYTHE_CHECK_30(! M.isSymmetric(), scythe_dimension_error,
         "Matrix not symmetric");
 
     Matrix<T,RO,Concrete> 
@@ -632,7 +632,7 @@ namespace scythe {
    *
    * \see vech(const Matrix<T,PO,PS>& M)
    *
-   * \throw scythe_dimensions_error (Level 1)
+   * \throw scythe_dimension_error (Level 1)
    * \throw scythe_alloc_error (Level 1)
    */
   template <matrix_order RO, matrix_style RS, typename T,
@@ -640,7 +640,7 @@ namespace scythe {
   Matrix<T, RO, RS>
   xpnd (const Matrix<T, PO, PS>& v)
   {
-    double size_d = -.5 + .5 * ::sqrt(1 + 8 * v.size());
+    double size_d = -.5 + .5 * std::sqrt(1. + 8 * v.size());
     SCYTHE_CHECK_10(std::fmod(size_d, 1.) != 0., 
         scythe_dimension_error, 
         "Input vector can't generate square matrix");
@@ -924,7 +924,7 @@ namespace scythe {
    */
 
   template<>
-  Matrix<>
+  inline Matrix<>
   gaxpy<Col,Concrete,double,Col,Concrete,Col,Concrete,Col,Concrete>
   (const Matrix<>& A, const Matrix<>& B, const Matrix<>& C)
   {
@@ -960,7 +960,7 @@ namespace scythe {
   }
 
   template<>
-  Matrix<>
+  inline Matrix<>
   crossprod(const Matrix<>& A)
   {
     SCYTHE_DEBUG_MSG("Using lapack/blas for crossprod");
