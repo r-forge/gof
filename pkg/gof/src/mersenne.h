@@ -72,13 +72,12 @@
 #ifndef SCYTHE_MERSENNE_H
 #define SCYTHE_MERSENNE_H
 
-/*#ifdef SCYTHE_COMPILE_DIRECT
-*/
+#ifdef SCYTHE_COMPILE_DIRECT
 #include "rng.h"
-/*#else
+#else
 #include "scythestat/rng.h"
 #endif
-*/
+
 namespace scythe {
 
 #ifdef __MINGW32__

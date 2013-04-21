@@ -61,12 +61,11 @@ dtimes <- sort(d$time[d$status==1])
 system.time(a <- cumres(model))
 summary(a)
 
-
+\dontrun{
 ## PBC example
 data(pbc)
 fit.cox <- coxph(Surv(time,status==2) ~ age + edema + bili + protime, data=pbc)
 system.time(pbc.gof <- cumres(fit.cox,R=2000))
-\donttest{
 par(mfrow=c(2,2))
 plot(pbc.gof, ci=TRUE, legend=NULL)
 }

@@ -1,21 +1,24 @@
-`cumres.default` <-
+##`cumres.default` <-
+cc <- 
   function(model,score,information,
            residualfun,variable,
            data=model.frame(model),par=coef(model),
            R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
            debug=FALSE, ...) {
 
+
     if(any(is.na(par))) stop("Over-parametrized model")
     ord <- order(variable)
-    x <- variable
+    x <- variable[ord]
     n <- length(x)
-    r <- residualfun(model)[ord]
+    r <- residualfun(model)
     grad <- attributes(r)$grad    
     if (is.null(grad)) {
       if (!require("numDeriv")) stop("Supply gradient")
-      grad <- numDeriv::jacobian(residualfun,par,...)[ord,]
+      grad <- numDeriv::jacobian(residualfun,par,...)
     }
-    score <- score[ord,]
+    r <- r[ord]; grad <- grad[ord,,drop=FALSE]
+    score <- score[ord,,drop=FALSE]
     Ii <-  solve(information)
     beta.iid <- Ii%*%t(score)        
         
@@ -52,7 +55,7 @@
     
     res <- with(onesim$output,
                 list(W=cbind(Wobs), What=list(What),
-                     x=cbind(x0),
+                     x=cbind(x),
                      KS=KS, CvM=CvM,
                      R=R, n=n, sd=cbind(Wsd), 
                      cvalues=cbind(cvalues), variable="x",

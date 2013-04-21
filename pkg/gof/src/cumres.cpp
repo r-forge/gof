@@ -141,7 +141,6 @@ extern "C" {
     Matrix<double> N(*n,1); 
     for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);
 
-    //    cerr << "Starting simulation\n";
     //    cerr << "W=" << Rout(W) <<"\n";
     Matrix<double> Res(min((double)*plotnum,(double)*R),*n);
     for (unsigned i=0; i< *R; i++) {
