@@ -1,0 +1,8 @@
+.RData
+.Rhistory
+*.o
+*.so
+Makefile
+getversion.pl
+gof/src/symbols.rds
+*.Rcheck
