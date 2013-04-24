@@ -1,25 +1,83 @@
-  cumresMaxSet <- function(m,var,...) {
-    if (!require("lava")) stop("package 'lava' not available")
-    A <- t(lava::index(m)$A)
-    Afix <- A; Afix[t(lava::index(m)$M0)==1] <- 0
-    A[A!=0] <- 1
-    P <- lava::index(m)$P
-    k <- nrow(A)
-    I <- diag(k)
-    B <- rbind(I,solve(I-A))
-    VV <- B%*%P%*%t(B)
-    u.var <- lava::index(m)$vars
-    V0 <- VV[seq(length(lava::vars(m))),seq(length(lava::vars(m)))+length(lava::vars(m))][,lava::endogenous(m)]
-    rownames(V0) <- lava::vars(m)
-    names(which(V0[var,]==0))
-  }
+cumresMaxSet <- function(m,var,...) {
+  if (!require("lava")) stop("package 'lava' not available")
+  A <- t(lava::index(m)$A)
+  Afix <- A; Afix[t(lava::index(m)$M0)==1] <- 0
+  A[A!=0] <- 1
+  P <- lava::index(m)$P
+  k <- nrow(A)
+  I <- diag(k)
+  B <- rbind(I,solve(I-A))
+  VV <- B%*%P%*%t(B)
+  u.var <- lava::index(m)$vars
+  V0 <- VV[seq(length(lava::vars(m))),seq(length(lava::vars(m)))+length(lava::vars(m))][,lava::endogenous(m)]
+  rownames(V0) <- lava::vars(m)
+  names(which(V0[var,]==0))
+}
 
+
+
+##' Cumulative residual processes for structural equation models
+##' 
+##' Calculates GoF statistics based on cumulative residual processes for
+##' structural equation models fitted with the \code{lava} package.
+##' 
+##' With \code{y} and \code{x} given as functions the user can decide which
+##' variables to use in the prediction of the outcome and predictor (use the
+##' \code{predict} method as below).
+##' 
+##' @param model \code{lvm} object
+##' @param y A formula specifying the association to be checked. Alternatively
+##' the outcome specified as a function or a string with the name of the outcome
+##' in the model.
+##' @param x Predictor. A function, vector or character
+##' @param full If FALSE the prediction, Pr, of the variable that are ordered
+##' after is only calculated based on the conditional distribution given
+##' covariates. If TRUE the conditional expectation is based on the largest set
+##' of covariates and endogenous variables such that the residual and Pr are
+##' uncorrelated.
+##' @param data data.frame (default is the model.frame of the model)
+##' @param p Optional parameter vector
+##' @param R Number of processes to simulate
+##' @param b Moving average parameter
+##' @param plots Number of processes to save for use with the plot method
+##' @param seed Random seed
+##' @param \dots Additional arguments parsed on to lower-level functions
+##' @method cumres lvmfit
+##' @export
+##' @return Returns a \code{cumres} object with associated
+##' \code{plot},\code{print},\code{confint} methods
+##' @author Klaus K. Holst
+##' @references B.N. Sanchez and E. A. Houseman and L. M. Ryan (2009)
+##' \emph{Residual-Based Diagnostics for Structural Equation Models}. Biometrics
+##' Volume 65 (1), pp 104-115.
+##' @keywords models regression
+##' @examples
+##' 
+##' \donttest{
+##' library(lava)
+##' m <- lvm(list(c(y1,y2,y3)~eta,eta~x)); latent(m) <- ~eta
+##' ## simulate some data with non-linear covariate effect
+##' functional(m,eta~x) <- function(x) 0.3*x^2
+##' d <- sim(m,100)
+##' 
+##' e <- estimate(m,d)
+##' ## Checking the functional form of eta on x
+##' g <- cumres(e,eta~x,R=1000)
+##' plot(g)
+##' 
+##' x <- function(p) predict(e,x=~y2+y3,p=p)[,"eta"]
+##' ## Checking the functional form of y1 on eta
+##' cumres(e,y1~eta,R=1000)
+##' g <- cumres(e,"y1",x=x,R=1000)
+##' plot(g)
+##' 
+##' }
 cumres.lvmfit <- function(model,y,x,full=FALSE,
                           data=model.frame(model),p,
                           R=1000, b=0, plots=min(R,50), seed=round(runif(1,1,1e9)),
                           ...) {
-  if (!require("numDeriv")) stop("package 'numDeriv' not available")    
   if (!require("lava")) stop("package 'lava' not available")
+  if (!require("numDeriv")) stop("package 'numDeriv' not available")    
 
   cl <- match.call()
   
@@ -88,7 +146,6 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
     return(res)
   }
 
-
   if (missing(p))
     p <- lava::pars(model)
   x0 <- x
@@ -98,9 +155,9 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
     if (full) {
       predictby <- cumresMaxSet(model,y,...)
       x0 <- predict(model,predictby)[,x]
-    } else {    
+    } else {
       if (x %in% lava::latent(model)) {
-        x0 <- attributes(predict(model))[["eta.x"]][x,]
+        x0 <- predict(model,~1)[,x]
       } else {
         x0 <- data[,x]
       }
@@ -114,7 +171,7 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
                  R=as.integer(R), ## Number of realizations
                  b=as.double(b), ## Moving average parameter
                  n=as.integer(n), ## Number of observations
-                 npar=as.integer(nrow(Ii)), ## Number of parameters (columns in design)
+                 npar=as.integer(length(p)), ## Number of parameters (columns in design)
                  xdata=as.double(x), ## Observations to cummulate after 
                  rdata=as.double(r), ## Residuals (one-dimensional)
                  betaiiddata=as.double(beta.iid), ## Score-process
@@ -138,23 +195,23 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
       grad <- -numDeriv::jacobian(y,p,method=lava::lava.options()$Dmethod)
   } else {
     myres <- function(p) {
-      attributes(predict(model,p=p))$epsilon.y[,y]
+      predict(model,vars(model),residual=TRUE,p=p)[,y]
     }
     r <- myres(p)
     grad <- -numDeriv::jacobian(myres,p,method=lava::lava.options()$Dmethod)
   }     
-  ##    Ii <- solve(information(model,p), num=TRUE)
-  Ii <- model$vcov
-  ord <- order(x0)
-  
+
+  ord <- order(x0)  
   x0 <- x0[ord]
   grad <- grad[ord,]
   r <- r[ord]
-  Ii <- model$vcov
-  Score <- lava::score(model,data=data,p=p,indiv=TRUE,weight=lava::Weight(model))[ord,]
-  beta.iid <- Ii%*%t(Score)
-  beta.iid[is.na(beta.iid)] <- 0
-
+  ##     Ii <- solve(information(model,p), num=TRUE)
+  ## Ii <- model$vcov
+  ## Score <- lava::score(model,data=data,p=p,indiv=TRUE,weight=lava::Weight(model))[ord,]
+  ## beta.iid <- Ii%*%t(Score)
+  ## beta.iid[is.na(beta.iid)] <- 0
+  beta.iid <- t(iid(model)[ord,])/nrow(data);
+  
   onesim <- hatW.MC(x0)
   What <- matrix(onesim$output$Ws,nrow=n);
 

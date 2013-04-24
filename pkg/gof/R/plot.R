@@ -1,3 +1,41 @@
+##' Plot cumulative residuals from a 'cumres' object
+##' 
+##' \code{plot} displays the observed cumulative residual process with
+##' realizations under the null. 95\% prediction bands
+##' 
+##' 
+##' @param x Object produced by the function \code{cumres}.
+##' @param idx vector of numbers (or variable names) indicating which processes
+##' from the \code{x} to plot.
+##' @param col Color of the sample processes. By setting this parameter to "none"
+##' or \code{NULL} no realizations will be drawn. The number of realizations is
+##' determined by the \code{cumres}-object.
+##' @param ci Type of prediction bands to plot. Defaults to none. Set to
+##' \code{TRUE} to obtain simultaneous prediction bands under the null (pointwise
+##' can be obtained by setting to "pointwise").
+##' @param col.ci Color of prediction band.
+##' @param col.alpha Degree of transparency (0-1) of the prediction bands.
+##' @param lty.ci Line type of prediction band.
+##' @param level The required prediction level.
+##' @param legend Type of legend where "type1" gives p-values of GoF-tests and
+##' "type2" gives usual type of legends.
+##' @param xlab Optional label of x-axis
+##' @param ylab Optional label of y-axis
+##' @param vs Label of predictor
+##' @param ylim Range of y axis
+##' @param title Main title
+##' @param ... Additional arguments passed to the plot-routine.
+##' @author Klaus K. Holst <kkho@@biostat.ku.dk>
+##' @seealso \code{\link[gof]{cumres}}
+##' @keywords hplot regression
+##' @examples
+##' 
+##' n <- 500; x <- abs(rnorm(n,sd=0.2))+0.01; y <- sqrt(x) + rnorm(n,sd=0.2)
+##' l <- lm(y ~ x)
+##' g <- cumres(l, R=500)
+##' plot(g, idx=1, ci="sim", col=NULL, col.ci="purple", legend="type2")
+##' @method plot cumres
+##' @export
 plot.cumres <- function(x, idx=1:length(x$variable),
                         col=c("grey"),
                         ci=TRUE,

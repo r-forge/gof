@@ -1,3 +1,57 @@
+##' Calculates GoF measures for Cox's propoportional hazard model for right
+##' censored survival times
+##' 
+##' Calculates score processes and KS and Cvm tests for proportionaly of hazards
+##' via simulation (Martinussen and Scheike, 2006).
+##' 
+##' 
+##' @param model Model object (\code{lm} or \code{glm})
+##' @param variable List of variable to order the residuals after
+##' @param R Number of samples used in simulation
+##' @param type Type of GoF-procedure
+##' @param plots Number of realizations to save for use in the plot-routine
+##' @param seed Random seed
+##' @param ... additional arguments
+##' @return Returns an object of class 'cumres'.
+##' @author Klaus K. Holst and Thomas Scheike
+##' @method cumres coxph
+##' @export
+##' @seealso \code{\link[gof]{cumres.glm}}, \code{\link[survival]{coxph}}, and
+##' \code{\link[timereg]{cox.aalen}} in the \code{timereg} package for similar
+##' GoF-methods for survival-data.
+##' @references Lin, D. Y. and Wei, L. J. and Ying, Z. (1993) \emph{Checking the
+##' Cox model with cumulative sums of martingale-based residuals} Biometrika,
+##' Volume 80, No 3, p. 557-572.
+##' 
+##' Martinussen, Torben and Scheike, Thomas H.  \emph{Dynamic regression models
+##' for survival data} (2006), Springer, New York.
+##' @keywords models regression
+##' @examples
+##' 
+##' library(survival)
+##' 
+##' simcox <- function(n=100, seed=1) {
+##'   if (!is.null(seed))
+##'     set.seed(seed)
+##'   require(survival)
+##'   time<-rexp(n); cen<-2*rexp(n);
+##'   status<-(time<cen);
+##'   time[status==0]<-cen[status==0];
+##'   X<-matrix(rnorm(2*n),n,2)
+##'   return(data.frame(time=time, status=status, X))
+##' }
+##' n <- 100; d <- simcox(n); model <- coxph(Surv(time,status)~ X1 + X2, data=d)
+##' cumres(model)
+##' 
+##' \dontrun{
+##' ## PBC example
+##' data(pbc)
+##' fit.cox <- coxph(Surv(time,status==2) ~ age + edema + bili + protime, data=pbc)
+##' system.time(pbc.gof <- cumres(fit.cox,R=2000))
+##' par(mfrow=c(2,2))
+##' plot(pbc.gof, ci=TRUE, legend=NULL)
+##' }
+##' 
 `cumres.coxph` <- function(model,
          variable=c(colnames(model.matrix(model))),
          type=c("score","residual"),
@@ -66,7 +120,8 @@
                  cvalues=as.double(numeric(R)),
                  Ws=as.double(numeric(nd*plots)),
                  W=as.double(numeric(nd)),
-                 WWW=as.double(0) ## Only for debugging
+                 WWW=as.double(0), ## Only for debugging
+                 pkg="gof"
                  )
     return(output)
   }

@@ -1,3 +1,8 @@
+Changes to Version 0.9 (23/4-2013)
+	- Update to work with new lava version  
+	- Patched scythestat (clang++ compatible)
+	- Help-pages updated
+
 Changes to Version 0.8-2 (14/6-2012)
 	- Updated to new scythestat version
 

@@ -1,5 +1,5 @@
-##`cumres.default` <-
-cc <- 
+##' @S3method cumres default
+`cumres.default` <-
   function(model,score,information,
            residualfun,variable,
            data=model.frame(model),par=coef(model),
@@ -20,7 +20,7 @@ cc <-
     r <- r[ord]; grad <- grad[ord,,drop=FALSE]
     score <- score[ord,,drop=FALSE]
     Ii <-  solve(information)
-    beta.iid <- Ii%*%t(score)        
+    beta.iid <- Ii%*%t(score)
         
     hatW.MC <- function(x) {
       ord <- order(x)

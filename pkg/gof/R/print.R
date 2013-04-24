@@ -1,3 +1,4 @@
+##' @S3method print cumres
 print.cumres <- function(x,...) {
   cat("\n");
   for (i in 1:length(x$variable)) {
@@ -9,4 +10,5 @@ print.cumres <- function(x,...) {
   invisible(x)
 }
 
+##' @S3method summary cumres
 summary.cumres <- function(object,...) print(object,...)

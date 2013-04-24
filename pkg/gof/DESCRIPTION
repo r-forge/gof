@@ -5,8 +5,24 @@ Version: 0.9.0
 Date: 2013-04-19
 Author: Klaus K. Holst
 Maintainer: Klaus. K. Holst <kkho@biostat.ku.dk>
-Description: Implementation of model-checking techniques for generalized linear models and linear structural equation models based on cumulative residuals
-Depends: R (>= 2.8), survival
-Suggests: numDeriv, lava
+Description: Implementation of model-checking techniques for generalized linear
+    models and linear structural equation models based on cumulative residuals
+Depends:
+    R (>= 2.15),
+    survival
+Suggests:
+    numDeriv,
+    lava
 License: GPL
 LazyLoad: yes
+Collate:
+    'confint.R'
+    'cumres.coxph.R'
+    'cumres.default.R'
+    'cumres.glm.R'
+    'cumres.lvmfit.R'
+    'gof-package.R'
+    'onload.R'
+    'plot.R'
+    'print.R'
+    'vcov.R'

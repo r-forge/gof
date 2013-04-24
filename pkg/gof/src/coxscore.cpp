@@ -51,13 +51,12 @@ Matrix<double> Wscorerate_cox(unsigned Var,
   
   Matrix<double> Wscorerate(n,nd); 
   for (unsigned i=0; i<n; i++) {
+    Matrix<double> betaiidrow = t(beta_iid(i,_));
     for (unsigned j=0; j<nd; j++) {
       Matrix<double> Itd = It(j,_); Itd.resize(p,p);
-      Matrix<double> betaiidrow = t(beta_iid(i,_));
       Wscorerate(i,j) = Mscorerate(j,i) - (Itd*betaiidrow)[Var];
     }
   }   
-
 
 
   return(Wscorerate);
@@ -126,17 +125,16 @@ extern "C" {
     Matrix<double> schoen = chrows(X,index_dtimes) - E; // Schoenfeld residuals
 
     Matrix<double> WW;
+
     if (*Type>1) {
       // Martingale residuals not yet implemented
     } else {        
       WW = Wscorerate_cox(paridx[0],X,schoen,RR,E,S_0,cumhaz,beta_iid,It,index_dtimes,time);
     }
-
     Matrix<double> sdW = apply(WW,2,ss2);    
     Matrix<double> Score = cumsum(schoen)(_,paridx[0]);
     double KSobs = KolmogorovSmirnov(Score);
     double CvMobs = CramerVonMises(Score,dtimes);
-
     unsigned KScount=0; 
     unsigned CvMcount=0;
     Matrix<double> Res(min((double)*plotnum,(double)*R),*nd);
