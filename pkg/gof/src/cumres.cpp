@@ -90,7 +90,7 @@ Matrix<double> Wi(const Matrix<double> &r,
    for (unsigned i=0; i<n; i++) {
     rs(i,_) = t(r) % ones(i,_);
   }
-  Wobs = ones*r/sqrt(n); // We expect Wobs at call to contain column
+   Wobs = ones*r/sqrt((double) n); // We expect Wobs at call to contain column
   // matrix of same length as residuals
   Matrix<double> eta = ones*etaraw;
   Matrix<double> W1 = eta*betaiid;  
@@ -98,7 +98,7 @@ Matrix<double> Wi(const Matrix<double> &r,
   //  for (unsigned i=0; i<n; i++) {
   //    res(i,_) = t(res(i,_))%r;
   //  }
-  return(res/sqrt(n));
+  return(res/sqrt((double) n));
 }
 
     
@@ -208,7 +208,7 @@ extern "C" {
     Wobs = 1/sqrt(*n)*Wobs;    
     */
     Matrix<double> Seta = cumsum2(etaraw,x);
-    Matrix<double> Wobs = 1/sqrt(*n)*cumsum2(r,x);
+    Matrix<double> Wobs = 1/sqrt((double) (*n))*cumsum2(r,x);
 
     double KSobs = KolmogorovSmirnov(Wobs);
     double CvMobs = CramerVonMises(Wobs,x); 
@@ -226,7 +226,7 @@ extern "C" {
     }
     Matrix<double> vW = (cumsum2(r%r,x)+W)/(*n);
     //Matrix<double> vW = (cumsum(r%r)+W)/(*n);
-    Matrix<double> sdW = sqrt(cumsum2(r%r,x)+W)/sqrt(*n);
+    Matrix<double> sdW = sqrt(cumsum2(r%r,x)+W)/sqrt((double) (*n));
     //Matrix<double> sdW = sqrt(cumsum(r%r)+W)/sqrt(*n);
     sdW[*n-1] = 1.0;
     for (unsigned j=0; j<(*n); j++) { // Avoid division by zero (cvalues)
@@ -237,7 +237,7 @@ extern "C" {
     for (unsigned i=0; i< *R; i++) {
       for (unsigned j=0; j<(*n); j++) N[j]=myrng.rnorm(0, 1);	
       Matrix<double> Nr = N%r;
-      Matrix<double> What = cumsum2(Nr,x)/sqrt(*n);
+      Matrix<double> What = cumsum2(Nr,x)/sqrt((double) (*n));
       //Matrix<double> What = cumsum(Nr/sqrt(*n));      
       //      Matrix<double> What = Nr/sqrt(*n);
       //      for (unsigned k=1; k<(*n); k++) {
@@ -247,7 +247,7 @@ extern "C" {
       Matrix<double> ISr = multRow(betaiid,t(N));
       //      Matrix<double> ISr = multRow(betaiid,t(N));
       Matrix<double> SumISr = apply(ISr,1,sum);
-      Matrix<double> KK=1/sqrt(*n)*Seta*SumISr;
+      Matrix<double> KK=1/sqrt((double) (*n))*Seta*SumISr;
       //Matrix<double> KK=1/sqrt(*n)*SumISr;
       What -= KK;
       cvalues[i] = max(fabs(What/sdW));
