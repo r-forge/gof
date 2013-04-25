@@ -12,7 +12,7 @@ Depends:
     survival
 Suggests:
     numDeriv,
-    lava
+    lava (>= 1.2)
 License: GPL
 LazyLoad: yes
 Collate:
