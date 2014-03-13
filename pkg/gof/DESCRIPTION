@@ -2,7 +2,7 @@ Package: gof
 Type: Package
 Title: Model-diagnostics based on cumulative residuals
 Version: 0.9.1
-Date: 2014-03-11
+Date: 2014-03-13
 Author: Klaus K. Holst
 Maintainer: Klaus. K. Holst <kkho@biostat.ku.dk>
 Description: Implementation of model-checking techniques for generalized linear
@@ -12,7 +12,7 @@ Depends:
 Suggests:
     numDeriv,
     survival,
-    lava (>= 1.2)
+    lava (>= 1.2.5)
 License: GPL
 LazyLoad: yes
 Collate:
