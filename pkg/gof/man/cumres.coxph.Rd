@@ -47,8 +47,8 @@ simcox <- function(n=100, seed=1) {
   X<-matrix(rnorm(2*n),n,2)
   return(data.frame(time=time, status=status, X))
 }
-n <- 100; d <- simcox(n); model <- coxph(Surv(time,status)~ X1 + X2, data=d)
-cumres(model)
+n <- 100; d <- simcox(n); m1 <- coxph(Surv(time,status)~ X1 + X2, data=d)
+cumres(m1)
 
 \dontrun{
 ## PBC example

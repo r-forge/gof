@@ -4,19 +4,13 @@
 \alias{gof-package}
 \title{Model-diagnostics based on cumulative residuals}
 \description{
-  Implementation of model-checking technique based on
-  cumulative residuals
-}
-\details{
-  \tabular{ll}{ Package: \tab gof\cr Type: \tab Package\cr
-  Version: \tab 0.8-2\cr Date: \tab 2011-06-14\cr License:
-  \tab GPL\cr LazyLoad: \tab yes\cr }
+  Model-diagnostics based on cumulative residuals
 }
 \examples{
 example(cumres)
 }
 \author{
-  Klaus. K. Holst <kkho@biostat.ku.dk>
+  Klaus K. Holst <kkho@biostat.ku.dk>
 }
 \references{
   D.Y. Lin and L.J. Wei and Z. Ying (2002)

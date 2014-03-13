@@ -1,4 +1,5 @@
 export(cumres)
+import(stats)
 import(utils)
 S3method(confint,cumres)
 S3method(cumres,coxph)

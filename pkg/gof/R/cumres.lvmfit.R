@@ -82,9 +82,9 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
   cl <- match.call()
   
   if (class(y)[1]=="formula") {
-    y <- lava:::getoutcome(y)
+    y <- lava::getoutcome(y)
     x <- attributes(y)$x
-    y <- lava:::decomp.specials(y)
+    y <- lava::decomp.specials(y)
   }
 
   if (is.list(y) && class(y[[1]])[1]=="formula") {
@@ -93,8 +93,8 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
     res <- c()
     cl[[1]] <- as.name("cumres")
     for (i in 1:length(yy)) {
-      resp <- lava:::getoutcome(yy[[i]])
-      y <- lava:::decomp.specials(resp)
+      resp <- lava::getoutcome(yy[[i]])
+      y <- lava::decomp.specials(resp)
       x <- attributes(resp)$x
       cl$y <- y; cl$x <- x
       res <- c(res, list(eval.parent(cl)))      
@@ -195,7 +195,8 @@ cumres.lvmfit <- function(model,y,x,full=FALSE,
       grad <- -numDeriv::jacobian(y,p,method=lava::lava.options()$Dmethod)
   } else {
     myres <- function(p) {
-      predict(model,vars(model),residual=TRUE,p=p)[,y]
+      rr <- predict(model,vars(model),residual=TRUE,p=p)
+      if (is.matrix(rr)) return(rr[,y]) else return(rr)          
     }
     r <- myres(p)
     grad <- -numDeriv::jacobian(myres,p,method=lava::lava.options()$Dmethod)

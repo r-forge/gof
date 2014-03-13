@@ -40,8 +40,8 @@
 ##'   X<-matrix(rnorm(2*n),n,2)
 ##'   return(data.frame(time=time, status=status, X))
 ##' }
-##' n <- 100; d <- simcox(n); model <- coxph(Surv(time,status)~ X1 + X2, data=d)
-##' cumres(model)
+##' n <- 100; d <- simcox(n); m1 <- coxph(Surv(time,status)~ X1 + X2, data=d)
+##' cumres(m1)
 ##' 
 ##' \dontrun{
 ##' ## PBC example
@@ -51,7 +51,6 @@
 ##' par(mfrow=c(2,2))
 ##' plot(pbc.gof, ci=TRUE, legend=NULL)
 ##' }
-##' 
 `cumres.coxph` <- function(model,
          variable=c(colnames(model.matrix(model))),
          type=c("score","residual"),
